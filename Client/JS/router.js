@@ -1,3 +1,6 @@
+
+import libraryApp from './app.js'; // ייבוא של האובייקט
+
 class Router {
     constructor() {
         this.routes = {
@@ -15,7 +18,6 @@ class Router {
         window.addEventListener('load', () => this.handleRouting());
     }
 
- 
     handleRouting() {
         const path = window.location.hash.slice(1) || '/login';
         const template = document.getElementById(`${path.slice(1)}-template`);
@@ -33,14 +35,16 @@ class Router {
         }
     }
 
-
     renderLogin() {
         const loginForm = document.getElementById('login-form');
         const registerLink = document.getElementById('register-link');
 
         if (loginForm) {
-            loginForm.addEventListener('submit', LibraryApp.handleLogin);
+            loginForm.addEventListener('submit', (event) => {
+                libraryApp.handleLogin(event); // קריאה לפונקציה מ-`LibraryApp`
+            });
         }
+
         if (registerLink) {
             registerLink.addEventListener('click', (event) => {
                 event.preventDefault();
@@ -49,14 +53,16 @@ class Router {
         }
     }
 
-   
     renderRegister() {
         const registerForm = document.getElementById('register-form');
         const loginLink = document.getElementById('login-link');
 
         if (registerForm) {
-            registerForm.addEventListener('submit', LibraryApp.handleRegister);
+            registerForm.addEventListener('submit', (event) => {
+                libraryApp.handleRegister(event); // קריאה לפונקציה מ-`LibraryApp`
+            });
         }
+
         if (loginLink) {
             loginLink.addEventListener('click', (event) => {
                 event.preventDefault();
@@ -66,7 +72,7 @@ class Router {
     }
 
     renderBooks() {
-        LibraryApp.renderBooks();
+        libraryApp.loadBooks(); // קריאה לפונקציה מ-`LibraryApp`
         const addBookBtn = document.getElementById('add-book-btn');
 
         if (addBookBtn) {
@@ -79,9 +85,11 @@ class Router {
     renderAddBook() {
         const addBookForm = document.getElementById('add-book-form');
         if (addBookForm) {
-            addBookForm.addEventListener('submit', LibraryApp.handleAddBook);
+            addBookForm.addEventListener('submit', (event) => {
+                libraryApp.handleAddBook(event); // קריאה לפונקציה מ-`LibraryApp`
+            });
         }
     }
 }
 
-const router = new Router();
+new Router();

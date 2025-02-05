@@ -20,7 +20,7 @@ class LibraryApp {
         const password = document.getElementById('password').value;
         
         try {
-            //const user = await loginUser(username, password); - צריך להתבצע דרך API -GET FAJAX
+            const user = await loginUser(username, password); // צריך להתבצע דרך API -GET FAJAX
             if (user) {
                 this.currentUser = user;
                 this.showBooksPage();
@@ -46,7 +46,7 @@ class LibraryApp {
     }
 
     async loadBooks() {
-        //const books = await getAllBooks(); - צריך להתבצע דרך API GET FAJAX
+        const books = await getAllBooks(); // צריך להתבצע דרך API GET FAJAX
         const booksList = document.getElementById('books-list');
         booksList.innerHTML = books.map(book => `
             <div class="book-card">
@@ -88,6 +88,8 @@ class LibraryApp {
     //     });
     // }
 }
+// יצירת האובייקט של LibraryApp כאן
+const libraryApp = new LibraryApp();
+export default libraryApp; // מייצא את האובייקט
 
-new LibraryApp();
 
