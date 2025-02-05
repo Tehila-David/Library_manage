@@ -5,17 +5,27 @@ class AuthServer {
 
     handleRequest(request) {
         switch (request.method) {
+            case 'GET':
+                // to implement
+            case 'GET_with_index':
+                // to implement
             case 'POST':
                 if (request.url.endsWith('/login')) {
-                    this.handleLogin(request);
-                } else if (request.url.endsWith('/register')) {
-                    this.handleRegister(request);
-                } else {
-                    this.sendResponse(request, 404, { message: 'Endpoint not found' });
-                }
-                break;
-            default:
-                this.sendResponse(request, 405, { message: 'Method not allowed' });
+                        this.handleLogin(request);
+                    } else if (request.url.endsWith('/register')) {
+                        this.handleRegister(request);
+                    } else {
+                        this.sendResponse(request, 404, { message: 'Endpoint not found' });
+                    }
+                    break;
+                default:
+                    this.sendResponse(request, 405, { message: 'Method not allowed' });
+            case 'PUT':
+                    // to implement
+            case 'DELETE':
+                    // to implement
+
+           
         }
     }
 
