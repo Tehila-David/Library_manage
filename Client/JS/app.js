@@ -168,5 +168,5 @@ class LibraryApp {
 }
 
 // Create an instance of LibraryApp
-const myLibraryApp = new LibraryApp();
-export default myLibraryApp;
+new LibraryApp();
+
