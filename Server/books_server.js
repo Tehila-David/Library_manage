@@ -1,88 +1,54 @@
 class BooksServer {
     constructor() {
-        this.db = new BooksDB();
+        this.db = new BooksDB(); // Create an instance of BooksDB
     }
 
-    handleRequest(request) {
-        switch (request.method) {
+    // Function to handle requests and perform the appropriate action based on the method
+    requestHandler(data, func = (x) => {}) {
+        const parsedData = JSON.parse(data);
+        const object = parsedData.object;
+        const method = parsedData.data.method;
+        
+        // Handle requests based on the method type
+        switch (method) {
             case 'GET':
-                if (request.url.endsWith('/books')) {
-                    this.handleGetAll(request);
+                if (object === 'books') {
+                    func(this.db.loadBooks()); // Return all books
+                } else if (object.title) {
+                    func(this.db.getBook(object.title)); // Get a specific book by ID
                 } else {
-                    this.handleGetOne(request);
+                    console.log('Error: Invalid object');
+                    //func({ status: 404, response: 'Not Found' });
                 }
                 break;
+    
             case 'POST':
-                this.handleCreate(request);
+                if (object.title && object.author) {
+                    func(this.db.addBook(object)); // Add a new book
+                } else {
+                    console.log("Error: Invalid object");
+                }
                 break;
+    
             case 'PUT':
-                this.handleUpdate(request);
+                if (object.title) {
+                    func(this.db.updateBook(object.title, object)); // Update a book by ID
+                } else {
+                    console.log("Error: Invalid object");
+                }
                 break;
+    
             case 'DELETE':
-                this.handleDelete(request);
+                if (object.title) {
+                    func(this.db.deleteBook(object.title)); // Delete a book by ID
+                } else {
+                    console.log("Error: Invalid object");
+                }
                 break;
+    
             default:
-                this.sendResponse(request, 405, { message: 'Method not allowed' });
+                console.log('Method not allowed');
+                break;
         }
-    }
-
-    async handleGetAll(request) {
-        try {
-            const books = this.db.getAll();
-            this.sendResponse(request, 200, books);
-        } catch (error) {
-            this.sendResponse(request, 500, { message: error.message });
-        }
-    }
-
-    async handleGetOne(request) {
-        try {
-            const bookId = request.url.split('/').pop();
-            const book = this.db.getById(bookId);
-            if (book) {
-                this.sendResponse(request, 200, book);
-            } else {
-                this.sendResponse(request, 404, { message: 'Book not found' });
-            }
-        } catch (error) {
-            this.sendResponse(request, 500, { message: error.message });
-        }
-    }
-
-    async handleCreate(request) {
-        try {
-            this.db.add(request.data);
-            this.sendResponse(request, 201, { message: 'Book added successfully' });
-        } catch (error) {
-            this.sendResponse(request, 500, { message: error.message });
-        }
-    }
-
-    async handleUpdate(request) {
-        try {
-            const bookId = request.url.split('/').pop();
-            this.db.update(bookId, request.data);
-            this.sendResponse(request, 200, { message: 'Book updated successfully' });
-        } catch (error) {
-            this.sendResponse(request, 500, { message: error.message });
-        }
-    }
-
-    async handleDelete(request) {
-        try {
-            const bookId = request.url.split('/').pop();
-            this.db.delete(bookId);
-            this.sendResponse(request, 200, { message: 'Book deleted successfully' });
-        } catch (error) {
-            this.sendResponse(request, 500, { message: error.message });
-        }
-    }
-
-    sendResponse(request, status, data) {
-        request.callback({
-            status,
-            data,
-            timestamp: Date.now()
-        });
     }
 }

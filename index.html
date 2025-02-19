@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מערכת ניהול ספרייה</title>
+    <link rel="stylesheet" href="./Client/CSS/styles.css">
+</head>
+<body>
+    <div id="app">
+        <div id="router-view"></div>
+    </div>
+
+    <template id="login-template">
+        <div class="login-container">
+            <h2>כניסה למערכת</h2>
+            <form id="login-form">
+                <input type="text" id="username" placeholder="שם משתמש" required>
+                <input type="password" id="password" placeholder="סיסמה" required>
+                <button type="submit"  class="btn">התחבר</button>
+            </form>
+            <p class="register-link">משתמש חדש? <a href="#" id="register-link">הירשם כאן</a></p>
+        </div>
+    </template>
+
+    <template id="register-template">
+        <div class="register-container">
+            <h2>הרשמה למערכת</h2>
+            <form id="register-form">
+                <input type="text" id="username" placeholder="שם משתמש" required>
+                <input type="password" id="password" placeholder="סיסמה" required>
+                <input type="email" id="email" placeholder="דוא״ל" required>
+                <button type="submit" class="btn">הירשם</button>
+            </form>
+            <p class="login-link">כבר יש לך חשבון? <a href="#" id="login-link">התחבר כאן</a></p>
+        </div>
+    </template>
+
+    <template id="books-template">
+        <div class="books-container">
+            <h2>ספרים בספרייה</h2>
+            <div id="books-list"></div>
+            <button id="add-book-btn" class="btn">הוסף ספר חדש</button>
+        </div>
+    </template>
+
+    <template id="add-book-template">
+        <div class="add-book-container">
+            <h2>הוספת ספר חדש</h2>
+            <form id="add-book-form">
+                <input type="text" id="book-title" placeholder="כותר הספר" required>
+                <input type="text" id="book-author" placeholder="שם המחבר" required>
+                <input type="number" id="book-year" placeholder="שנת הוצאה" required>
+                <button type="submit" class="btn">שמור ספר</button>
+            </form>
+        </div>
+    </template>
+
+    <script src="./Database/UsersDB.js" defer></script>
+    <script src="./Database/BooksDB.js"></script>
+    <script src="./Server/auth_server.js" defer></script>
+    <script src="./Server/books_server.js"></script>
+    <script src="./Client/JS/network.js" defer ></script>
+    <script src="./Client/JS/fajax.js" defer></script>
+    <script src="./Client/JS/app.js" type="module" defer></script> <!-- ודא שזה נטען קודם -->
+    
+
+   
+ 
+    <!-- <script src="./Database/DB.js"></script>
+    
+    
+    </script> -->
+    
+</body>
+</html>

@@ -1,36 +1,32 @@
+
+// Network class to handle requests to different servers (AuthServer or BooksServer)
 class Network {
-    static instance = null;
+    // Create instances of the servers
+    serverAuth = new AuthServer();  // Instance of AuthServer
+    serverBooks = new BooksServer(); // Instance of BooksServer
 
-    static getInstance() {
-        if (!Network.instance) {
-            Network.instance = new Network();
-        }
-        return Network.instance;
-    }
-
-    constructor() {
-        this.dropRate = 0.1; // 10% packet loss
-        this.minDelay = 1000; // 1 second
-        this.maxDelay = 3000; // 3 seconds
-    }
-
-    sendRequest(request) {
-        if (Math.random() < this.dropRate) {
-            console.log('Network: Packet dropped');
-            return;
-        }
-
-        const delay = Math.random() * (this.maxDelay - this.minDelay) + this.minDelay;
-        
-        setTimeout(() => {
-            this.routeRequest(request);
-        }, delay);
-    }
-    routeRequest(request) {
-        if (request.url.includes('/auth')) {
-            authServer.handleRequest(request);
-        } else if (request.url.includes('/books')) {
-            booksServer.handleRequest(request);
+    /**
+     * Sends data to the appropriate server based on the serverType
+     * @param {Object} data - Contains information like method, url, serverType, etc.
+     * @param {Function} func - Callback function to be executed once the request is complete
+     */
+    sendToServer(request, func = () => { }) {
+        console.log(request);
+        const requestObj=JSON.parse(request);
+        const serverType = requestObj.data.serverType;
+        console.log(serverType);
+        // Check which server to send the request to based on serverType
+        if (serverType === 'AuthServer') {
+            return this.serverAuth.requestHandler(request, func);
+        } 
+        else if (serverType === "BooksServer") {
+            return this.serverBooks.requestHandler(request, func);
+        } 
+        else {
+            console.error("Unknown server type");
         }
     }
+
 }
+
+

@@ -1,66 +1,63 @@
-// class BooksDB extends DB {
-//     constructor() {
-//         super("books");
-//     }
-// }
-
-class Book {
-    constructor(data) {
-        this.id = data.id || null;
-        this.title = data.title;
-        this.author = data.author;
-        this.year = data.year;
-        this.status = data.status || 'available';
-        this.image = data.image || '/images/default-book.jpg';
-        this.description = data.description || '';
+class BooksDB {
+  
+    //  Load books from local storage 
+    loadBooks() {
+      console.log("Loading books", localStorage.getItem("books"));
+      return JSON.parse(localStorage.getItem("books")) || [];
     }
-}
-
-class BooksDB extends DB {
-    constructor() {
-        super('libraryBooks');
+  
+    //  Save books to local storage 
+    saveBooks(books) {
+      localStorage.setItem("books", JSON.stringify(books));
     }
-
-    searchBooks(query) {
-        const books = this.load();
-        return books.filter(book => 
-            book.title.includes(query) || 
-            book.author.includes(query)
-        );
+  
+    //  Add a new book 
+    addBook(addBook) {
+      const books = this.loadBooks();
+      const existingBook = books.find((book) => book.title === addBook.title);
+      if (existingBook) {
+        return null; // If book already exists, return null
+      }
+      const newBook = addBook;
+      books.push(newBook);
+      this.saveBooks(books);
+      return newBook;
     }
-
-    addBook(bookData) {
-        const newBook = new Book(bookData);
-        return this.add(newBook);
+  
+    // Get all books 
+    getBooksList() {
+      console.log("Getting books");
+      return this.loadBooks();
     }
-}
-
-// הוספת נתונים התחלתיים
-function initializeBooks() {
-    const booksDB = new BooksDB();
-    const existingBooks = booksDB.load();
-    
-    if (existingBooks.length === 0) {
-        const initialBooks = [
-            {
-                title: 'מלחמה ושלום',
-                author: 'לב טולסטוי',
-                year: 1869,
-                status: 'available',
-                image: '/images/war-and-peace.jpg'
-            },
-            {
-                title: 'האלכימאי',
-                author: 'פאולו קואלו',
-                year: 1988,
-                status: 'available',
-                image: '/images/alchemist.jpg'
-            }
-        ];
-
-        initialBooks.forEach(book => booksDB.addBook(book));
+  
+    //  Find a book by bookId 
+    getBook(bookTitle) {
+      const books = this.loadBooks();
+      return books.find((book) => book.title === bookTitle);
     }
-}
-
-// קריאה לפונקציה בעת טעינת האפליקציה
-initializeBooks();
+  
+    //  Update a book's information 
+    updateBook(bookTitle, newData) {
+      const books = this.loadBooks();
+      const book = books.find((book) => book.title === bookTitle);
+      if (book) {
+        Object.assign(book, newData);
+        this.saveBooks(books);
+        return true; // Successfully updated
+      }
+      return false; // Book not found
+    }
+  
+    //  Delete a book 
+    deleteBook(bookTitle) {
+      const books = this.loadBooks();
+      const index = books.findIndex((book) => book.title === bookTitle);
+      if (index !== -1) {
+        books.splice(index, 1);
+        this.saveBooks(books);
+        return true; // Successfully deleted
+      }
+      return false; // Book not found
+    }
+  }
+  
