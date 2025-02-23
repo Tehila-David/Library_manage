@@ -105,10 +105,11 @@ class LibraryApp {
     async handleRegister(event) {
         event.preventDefault();
         const username = document.getElementById('username').value;
+        const id = document.getElementById('id').value;
         const password = document.getElementById('password').value;
         const email = document.getElementById('email').value;
 
-        const newUser = { userName: username, password: password, email: email };
+        const newUser = { userName: username, password: password, email: email, id: id };
         const request = new FXMLHttpRequest();
         request.open("POST", "");
         request.onload = (user) => {
@@ -126,40 +127,74 @@ class LibraryApp {
     // Function to handle adding a new book to the system
     async handleAddBook(event) {
         event.preventDefault();
-
-        // Retrieve book details from form fields
+    
+        // שליפת פרטי הספר מהשדות בטופס
         const title = document.getElementById('book-title').value;
         const author = document.getElementById('book-author').value;
+        const shelf = document.getElementById('book-shelf').value;
         const year = document.getElementById('book-year').value;
+        const category = document.getElementById('book-category').value;
+        const image = document.getElementById('book-image').value;
+        const status = document.getElementById('book-status').value;
 
-        const newBook = { title: title, author: author, year: year };
-
+    
+        // שליפת המזהה האחרון שנשמר ב-localStorage, או אתחול ל-1
+        let bookId = localStorage.getItem("bookIdCounter");
+        bookId = bookId ? parseInt(bookId) + 1 : 1;
+    
+        // עדכון המונה ב-localStorage
+        localStorage.setItem("bookIdCounter", bookId);
+    
+        // יצירת אובייקט ספר חדש עם כל הפרטים
+        const newBook = {
+            id: bookId,
+            title: title,
+            author: author,
+            shelf: shelf,
+            year: year,
+            category: category,
+            image: image,
+            status: status
+        };
+        
+    
         const request = new FXMLHttpRequest();
-        request.open("POST", "/add-book", "BooksServer"); // Adjust the URL as needed for your API
+        request.open("POST", "/add-book", "BooksServer"); // עדכן את כתובת ה-URL לפי הצורך
         request.onload = (book) => {
             if (book) {
                 alert("The book has been successfully added!");
-                window.location.hash = '/books'; // Navigate to books page after successful addition
+                window.location.hash = '/books'; // מעבר לעמוד הספרים לאחר הוספת הספר
             } else {
                 alert("There was an error adding the book.");
             }
         };
         request.send(newBook);
     }
+    
 
-  
+
     // Function to load books from the server and display them
     async loadBooks() {
         const request = new FXMLHttpRequest();
-        request.open("GET", "","BooksServer"); // Replace with the URL where books are stored
+        request.open("GET", "", "BooksServer"); // Replace with the URL where books are stored
         request.onload = (books) => {
             const booksList = document.getElementById('books-list');
             booksList.innerHTML = books.map(book => `
-            <div class="book-card">
-                <h3>${book.title}</h3>
-                <p>סופר: ${book.author}</p>
-                <p>שנת הוצאה: ${book.year}</p>
-            </div>
+              <tr>
+                <td><img src="${book.image}" alt="${book.title} Image" /></td> <!-- עמודת התמונה -->
+                <td>${book.title}</td>
+                <td>${book.author}</td>
+                <td>${book.year}</td>
+                <td>${book.id}</td>
+                <td>${book.category}</td> <!-- הצגת הקטגוריה -->
+                <td>${book.shelf}</td>
+                <td>${book.status}</td> <!-- הצגת שנת הוצאה -->
+                <td>
+                    <button class="edit-btn" onclick="editBook('${book.id}')"> ערוך</button>
+                    <button class="delete-btn" onclick="deleteBook('${book.id}')"> מחק</button>
+                </td>
+            </tr>
+
         `).join(''); // Create a list of book cards to display
         };
         request.send("books"); // Send the request to load books from the server

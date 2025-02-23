@@ -1,69 +1,190 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>מערכת ניהול ספרייה</title>
-    <link rel="stylesheet" href="./Client/CSS/styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>מערכת ניהול ספרייה</title>
+  <link rel="stylesheet" href="./Client/CSS/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
 </head>
 <body>
-    <div id="app">
-        <div id="router-view"></div>
+  <div id="app">
+      <div id="router-view"></div>
+  </div>
+
+  <!-- Login Template -->
+  <template id="login-template">
+    <div class="login-container">
+      <h2>כניסה למערכת ניהול הספרייה</h2>
+      <form id="login-form">
+        <input type="text" id="username" placeholder="שם משתמש" required>
+        <input type="password" id="password" placeholder="סיסמה" required>
+        <button type="submit" class="btn">התחבר</button>
+      </form>
+      <p class="register-link">משתמש חדש? <a href="#" id="register-link">הירשם כאן</a></p>
     </div>
+  </template>
 
-    <template id="login-template">
-        <div class="login-container">
-            <h2>כניסה למערכת</h2>
-            <form id="login-form">
-                <input type="text" id="username" placeholder="שם משתמש" required>
-                <input type="password" id="password" placeholder="סיסמה" required>
-                <button type="submit"  class="btn">התחבר</button>
-            </form>
-            <p class="register-link">משתמש חדש? <a href="#" id="register-link">הירשם כאן</a></p>
+  <!-- Register Template -->
+  <template id="register-template">
+    <div class="register-container">
+      <h2>הרשמת ספרן חדש</h2>
+      <form id="register-form">
+        <input type="text" id="username" placeholder="שם משתמש" required>
+        <input type="text" id="id" placeholder="מספר זהות" required>
+        <input type="password" id="password" placeholder="סיסמה" required>
+        <input type="email" id="email" placeholder="דוא״ל" required>
+        <button type="submit" class="btn">הרשם</button>
+      </form>
+    </div>
+  </template>
+
+
+  <!-- Books Template -->
+  <template id="books-template">
+    <div>
+      <!-- Top Bar -->
+      <div class="top-bar">
+        <div class="top-bar-content">
+          <div class="logo-container">
+            <img src="/api/placeholder/40/40" alt="לוגו" class="logo-image">
+            <h1>ניהול ספרייה</h1>
+          </div>
+          <div class="user-info">
+            <span>שלום, ספרן</span>
+            <nav class="top-nav">
+              <a href="#" id="books-link-2">ספרים</a>
+              <a href="#" id="my-actions-link-2">הפעולות שלי</a>
+              <button class="btn-logout"><i class="fas fa-sign-out-alt"></i></button>
+            </nav>
+          </div>
         </div>
-    </template>
+      </div>
 
-    <template id="register-template">
-        <div class="register-container">
-            <h2>הרשמה למערכת</h2>
-            <form id="register-form">
-                <input type="text" id="username" placeholder="שם משתמש" required>
-                <input type="password" id="password" placeholder="סיסמה" required>
-                <input type="email" id="email" placeholder="דוא״ל" required>
-                <button type="submit" class="btn">הירשם</button>
-            </form>
-            <p class="login-link">כבר יש לך חשבון? <a href="#" id="login-link">התחבר כאן</a></p>
+      <!-- Books Container -->
+      <div class="books-container">
+        <div class="books-header">
+          <h2>ניהול מלאי ספרים</h2>
+          <button id="add-book-btn" class="btn">
+            <i class="fas fa-plus"></i>
+            הוסף ספר חדש
+          </button>
         </div>
-    </template>
 
-    <template id="books-template">
-        <div class="books-container">
-            <h2>ספרים בספרייה</h2>
-            <div id="books-list"></div>
-            <button id="add-book-btn" class="btn">הוסף ספר חדש</button>
+        <div class="search-filters">
+          <input type="text" class="search-input" placeholder="חיפוש לפי שם ספר, מחבר או ISBN...">
+          <select class="filter-select">
+            <option value="">מיקום במדף</option>
+            <option value="a1">מדף A1</option>
+            <option value="a2">מדף A2</option>
+            <option value="b1">מדף B1</option>
+          </select>
+          <select class="filter-select">
+            <option value="">סטטוס</option>
+            <option value="available">זמין</option>
+            <option value="borrowed">מושאל</option>
+            <option value="late">באיחור</option>
+          </select>
+          <button class="btn">חפש</button>
         </div>
-    </template>
 
-    <template id="add-book-template">
-        <div class="add-book-container">
-            <h2>הוספת ספר חדש</h2>
-            <form id="add-book-form">
-                <input type="text" id="book-title" placeholder="כותר הספר" required>
-                <input type="text" id="book-author" placeholder="שם המחבר" required>
-                <input type="number" id="book-year" placeholder="שנת הוצאה" required>
-                <button type="submit" class="btn">שמור ספר</button>
-            </form>
+        <table class="books-table">
+            <thead>
+                <tr>
+                  <th>תמונה</th>
+                  <th>שם הספר</th>
+                  <th>מחבר</th>
+                  <th>שנת הוצאה</th>
+                  <th>ISBN</th>
+                  <th>קטגוריה</th>
+                  <th>מיקום</th>
+                  <th>סטטוס</th>
+                  <th>פעולות</th>
+                </tr>
+              </thead>
+          <tbody id="books-list">
+            <!-- תוכן דינמי -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </template>
+
+  <!-- Librarian Actions Template -->
+  <template id="librarian-actions-template">
+    <div>
+      <!-- Top Bar זהה -->
+      <div class="top-bar">
+        <div class="top-bar-content">
+          <div class="logo-container">
+            <img src="/api/placeholder/40/40" alt="לוגו" class="logo-image">
+            <h1>ניהול ספרייה</h1>
+          </div>
+          <div class="user-info">
+            <span>שלום, ספרן</span>
+            <nav class="top-nav">
+              <a href="#" id="books-link-2">ספרים</a>
+              <a href="#" id="my-actions-link-2">הפעולות שלי</a>
+              <button class="btn-logout"><i class="fas fa-sign-out-alt"></i></button>
+            </nav>
+          </div>
         </div>
-    </template>
+      </div>
 
-    <script src="./Database/UsersDB.js" defer></script>
-    <script src="./Database/BooksDB.js"></script>
-    <script src="./Server/auth_server.js" defer></script>
-    <script src="./Server/books_server.js"></script>
-    <script src="./Client/JS/network.js" defer ></script>
-    <script src="./Client/JS/fajax.js" defer></script>
-    <script src="./Client/JS/app.js"  defer></script> 
-    
-    
+      <!-- Librarian Actions Container -->
+      <div class="librarian-actions-page">
+        <h2>פעולות שביצעת</h2>
+        <ul id="actions-list">
+          <!-- פעולות דינמיות של הספרן יוצגו כאן -->
+        </ul>
+      </div>
+    </div>
+  </template>
+
+ <!-- Add Book Template (טופס הוספת ספר חדש) -->
+ <template id="add-book-template">
+    <div class="add-book-container">
+      <h2>הוספת ספר חדש</h2>
+      <form id="add-book-form">
+        <input type="text" id="book-title" placeholder="שם הספר" required>
+        <input type="text" id="book-author" placeholder="שם המחבר" required>
+        <select id="book-category" required>
+          <option value="">בחר קטגוריה</option>
+          <option value="fiction">ספרות יפה</option>
+          <option value="academic">ספרות אקדמית</option>
+          <option value="reference">ספרי יעץ</option>
+        </select>
+        <select id="book-shelf" required>
+          <option value="">בחר מיקום במדף</option>
+          <option value="A1">מדף A1</option>
+          <option value="A2">מדף A2</option>
+          <option value="B1">מדף B1</option>
+          <option value="B2">מדף B2</option>
+        </select>
+        <input type="number" id="book-year" placeholder="שנת הוצאה" required>
+        <input type="text" id="book-image" placeholder="URL לתמונה" required>
+            
+      <select id="book-status" required>
+        <option value="">בחר סטטוס</option>
+        <option value="available">זמין</option>
+        <option value="loaned">הושאל</option>
+        <option value="unavailable">לא זמין</option>
+      </select>
+
+        <button type="submit" class="btn">הוסף ספר</button>
+      </form>
+    </div>
+  </template>
+  
+
+  <!-- סקריפטים (ניתן להתאימם) -->
+  <script src="./Database/UsersDB.js" defer></script>
+  <script src="./Database/BooksDB.js"></script>
+  <script src="./Server/auth_server.js" defer></script>
+  <script src="./Server/books_server.js"></script>
+  <script src="./Client/JS/network.js" defer></script>
+  <script src="./Client/JS/fajax.js" defer></script>
+  <script src="./Client/JS/app.js" defer></script>
 </body>
 </html>
