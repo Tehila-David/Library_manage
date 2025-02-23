@@ -126,16 +126,21 @@ class LibraryApp {
     // Function to handle adding a new book to the system
     async handleAddBook(event) {
         event.preventDefault();
-
+    
         // Retrieve book details from form fields
         const title = document.getElementById('book-title').value;
         const author = document.getElementById('book-author').value;
         const year = document.getElementById('book-year').value;
         const category = document.getElementById('book-category').value;
         const stock = document.getElementById('book-stock').value;
-
-        const newBook = { title: title, author: author, year: year, category: category, stock:stock };
-
+    
+        let lastId = localStorage.getItem('lastBookId');
+        lastId = lastId ? parseInt(lastId) + 1 : 10000;
+    
+        localStorage.setItem('lastBookId', lastId);
+    
+        const newBook = { id: lastId, title: title, author: author, year: year, category: category, stock: stock };
+    
         const request = new FXMLHttpRequest();
         request.open("POST", "/add-book", "BooksServer"); // Adjust the URL as needed for your API
         request.onload = (book) => {
@@ -148,6 +153,7 @@ class LibraryApp {
         };
         request.send(newBook);
     }
+    
 
   
     // Function to load books from the server and display them
@@ -157,14 +163,15 @@ class LibraryApp {
         request.onload = (books) => {
             const booksList = document.getElementById('books-list');
             booksList.innerHTML = books.map(book => `
-            <div class="book-card">
-                <h3>${book.title}</h3>
-                <p>סופר: ${book.author}</p>
-                <p>שנת הוצאה: ${book.year}</p>
-                <p>קטגוריה: ${book.category}</p>
-                <p>כמות במלאי: ${book.stock}</p>
-            </div>
-        `).join(''); // Create a list of book cards to display
+                <div class="book-card">
+                    <h3>${book.title}</h3>
+                    <p>ID: ${book.id}</p>
+                    <p>סופר: ${book.author}</p>
+                    <p>שנת הוצאה: ${book.year}</p>
+                    <p>קטגוריה: ${book.category}</p>
+                    <p>כמות במלאי: ${book.stock}</p>
+                </div>
+            `).join(''); // Create a list of book cards to display
         };
         request.send("books"); // Send the request to load books from the server
     }
