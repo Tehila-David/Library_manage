@@ -128,17 +128,12 @@ class LibraryApp {
     async handleAddBook(event) {
         event.preventDefault();
     
-<<<<<<< HEAD
         // שליפת פרטי הספר מהשדות בטופס
-=======
-        // Retrieve book details from form fields
->>>>>>> 9740a17a3188a85c199b6dc997a6b669453a10e6
         const title = document.getElementById('book-title').value;
         const author = document.getElementById('book-author').value;
         const shelf = document.getElementById('book-shelf').value;
         const year = document.getElementById('book-year').value;
         const category = document.getElementById('book-category').value;
-<<<<<<< HEAD
         const image = document.getElementById('book-image').value;
         const status = document.getElementById('book-status').value;
 
@@ -162,16 +157,6 @@ class LibraryApp {
             status: status
         };
         
-=======
-        const stock = document.getElementById('book-stock').value;
-    
-        let lastId = localStorage.getItem('lastBookId');
-        lastId = lastId ? parseInt(lastId) + 1 : 10000;
-    
-        localStorage.setItem('lastBookId', lastId);
-    
-        const newBook = { id: lastId, title: title, author: author, year: year, category: category, stock: stock };
->>>>>>> 9740a17a3188a85c199b6dc997a6b669453a10e6
     
         const request = new FXMLHttpRequest();
         request.open("POST", "/add-book", "BooksServer"); // עדכן את כתובת ה-URL לפי הצורך
@@ -186,10 +171,6 @@ class LibraryApp {
         request.send(newBook);
     }
     
-<<<<<<< HEAD
-
-=======
->>>>>>> 9740a17a3188a85c199b6dc997a6b669453a10e6
 
     // Function to load books from the server and display them
     async loadBooks() {
@@ -198,7 +179,6 @@ class LibraryApp {
         request.onload = (books) => {
             const booksList = document.getElementById('books-list');
             booksList.innerHTML = books.map(book => `
-<<<<<<< HEAD
               <tr>
                 <td><img src="${book.image}" alt="${book.title} Image" /></td> <!-- עמודת התמונה -->
                 <td>${book.title}</td>
@@ -215,17 +195,6 @@ class LibraryApp {
             </tr>
 
         `).join(''); // Create a list of book cards to display
-=======
-                <div class="book-card">
-                    <h3>${book.title}</h3>
-                    <p>ID: ${book.id}</p>
-                    <p>סופר: ${book.author}</p>
-                    <p>שנת הוצאה: ${book.year}</p>
-                    <p>קטגוריה: ${book.category}</p>
-                    <p>כמות במלאי: ${book.stock}</p>
-                </div>
-            `).join(''); // Create a list of book cards to display
->>>>>>> 9740a17a3188a85c199b6dc997a6b669453a10e6
         };
         request.send("books"); // Send the request to load books from the server
     }
