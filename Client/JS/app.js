@@ -139,15 +139,14 @@ class LibraryApp {
 
     
         // שליפת המזהה האחרון שנשמר ב-localStorage, או אתחול ל-1
-        let bookId = localStorage.getItem("bookIdCounter");
-        bookId = bookId ? parseInt(bookId) + 1 : 1;
+       let lastId = localStorage.getItem('lastBookId') || 10000;
+       lastId = Number(lastId) + 1;
+       localStorage.setItem('lastBookId', lastId);
     
-        // עדכון המונה ב-localStorage
-        localStorage.setItem("bookIdCounter", bookId);
-    
+       
         // יצירת אובייקט ספר חדש עם כל הפרטים
         const newBook = {
-            id: bookId,
+            id: lastId,
             title: title,
             author: author,
             shelf: shelf,
