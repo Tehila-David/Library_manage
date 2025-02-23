@@ -131,8 +131,10 @@ class LibraryApp {
         const title = document.getElementById('book-title').value;
         const author = document.getElementById('book-author').value;
         const year = document.getElementById('book-year').value;
+        const category = document.getElementById('book-category').value;
+        const stock = document.getElementById('book-stock').value;
 
-        const newBook = { title: title, author: author, year: year };
+        const newBook = { title: title, author: author, year: year, category: category, stock:stock };
 
         const request = new FXMLHttpRequest();
         request.open("POST", "/add-book", "BooksServer"); // Adjust the URL as needed for your API
@@ -159,6 +161,8 @@ class LibraryApp {
                 <h3>${book.title}</h3>
                 <p>סופר: ${book.author}</p>
                 <p>שנת הוצאה: ${book.year}</p>
+                <p>קטגוריה: ${book.category}</p>
+                <p>כמות במלאי: ${book.stock}</p>
             </div>
         `).join(''); // Create a list of book cards to display
         };
