@@ -1,63 +1,69 @@
 class BooksDB {
   
-    //  Load books from local storage 
-    loadBooks() {
-      console.log("Loading books", localStorage.getItem("books"));
+  // Load books from local storage
+  loadBooks() {
       return JSON.parse(localStorage.getItem("books")) || [];
-    }
-  
-    //  Save books to local storage 
-    saveBooks(books) {
+  }
+
+  // Save books to local storage
+  saveBooks(books) {
       localStorage.setItem("books", JSON.stringify(books));
-    }
-  
-    //  Add a new book 
-    addBook(addBook) {
+  }
+
+  // Generate a unique book ID
+  generateBookId() {
+      let lastId = localStorage.getItem('lastBookId') || 10000;
+      lastId = Number(lastId) + 1;
+      localStorage.setItem('lastBookId', lastId);
+      return lastId;
+  }
+
+  // Add a new book if the title does not already exist
+  addBook(newBook) {
       const books = this.loadBooks();
-      const existingBook = books.find((book) => book.title === addBook.title);
+      const existingBook = books.find((book) => book.title === newBook.title);
       if (existingBook) {
-        return null; // If book already exists, return null
+          alert("A book with this title already exists.");
+          return null;
       }
-      const newBook = addBook;
+      newBook.id = this.generateBookId();
       books.push(newBook);
       this.saveBooks(books);
       return newBook;
-    }
-  
-    // Get all books 
-    getBooksList() {
-      console.log("Getting books");
-      return this.loadBooks();
-    }
-  
-    //  Find a book by bookId 
-    getBook(bookTitle) {
-      const books = this.loadBooks();
-      return books.find((book) => book.title === bookTitle);
-    }
-  
-    //  Update a book's information 
-    updateBook(bookTitle, newData) {
-      const books = this.loadBooks();
-      const book = books.find((book) => book.title === bookTitle);
-      if (book) {
-        Object.assign(book, newData);
-        this.saveBooks(books);
-        return true; // Successfully updated
-      }
-      return false; // Book not found
-    }
-  
-    //  Delete a book 
-    deleteBook(bookTitle) {
-      const books = this.loadBooks();
-      const index = books.findIndex((book) => book.title === bookTitle);
-      if (index !== -1) {
-        books.splice(index, 1);
-        this.saveBooks(books);
-        return true; // Successfully deleted
-      }
-      return false; // Book not found
-    }
   }
-  
+
+  // Get all books
+  getBooksList() {
+      return this.loadBooks();
+  }
+
+  // Find a book by ID
+  getBook(bookId) {
+      const books = this.loadBooks();
+      return books.find((book) => book.id === bookId) || null;
+  }
+
+  // Update book by ID
+  updateBook(bookId, newData) {
+      const books = this.loadBooks();
+      const bookIndex = books.findIndex((book) => book.id === bookId);
+      if (bookIndex !== -1) {
+          Object.assign(books[bookIndex], newData);
+          this.saveBooks(books);
+          return true;
+      }
+      return false;
+  }
+
+  // Delete book by ID
+  deleteBook(bookId) {
+      const books = this.loadBooks();
+      const index = books.findIndex((book) => book.id === bookId);
+      if (index !== -1) {
+          books.splice(index, 1);
+          this.saveBooks(books);
+          return true;
+      }
+      return false;
+  }
+}
