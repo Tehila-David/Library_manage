@@ -2,7 +2,6 @@ class LibraryApp {
     constructor() {
         this.currentUser = null;
         this.initRouter(); // Initialize the routing system when the object is created
-        this.initEventListeners();
     }
 
     // Function to initialize the routing system. It listens for changes in the URL hash and calls the appropriate functions for each route.
@@ -149,7 +148,7 @@ class LibraryApp {
                 return;
             }
             
-            const filteredBooks = books.filter(book => book.title.includes(searchTerm));
+            const filteredBooks = books.filter(book => book.title.includes(searchTerm)||book.author.includes(searchTerm));
             
             booksList.innerHTML = filteredBooks.map(book => `
                 <tr>
