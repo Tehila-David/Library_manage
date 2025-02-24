@@ -1,6 +1,7 @@
 class LibraryApp {
     constructor() {
         this.currentUser = null;
+        this.books=[];
         this.initRouter(); // Initialize the routing system when the object is created
     }
 
@@ -63,12 +64,26 @@ class LibraryApp {
         if (template) {
             document.getElementById('router-view').innerHTML = template.innerHTML;
             this.loadBooks();  // Load the books when rendering the books page
-            document.getElementById('search-books').addEventListener('input', (e) => {
-                this.loadBooks(e.target.value);
+
+            document.getElementById('search-books').addEventListener('input', () => {
+                this.filterBooks();
             });
+
+            document.querySelectorAll(".filter-select").forEach(select => {
+                select.addEventListener("change", () => {
+                    this.filterBooks(); // filter by combo box
+                });
+            });
+
+            document.getElementById('filter-btn').addEventListener("click", () => {
+                console.log("hi");
+                this.filterBooks();
+            });
+
             document.getElementById('add-book-btn')?.addEventListener('click', () => {
                 window.location.hash = '/add-book'; // Navigate to the add-book page
             });
+
             document.addEventListener('click', (e) => {
                 if (e.target.matches('.delete-btn')) {
                     e.preventDefault();
@@ -76,6 +91,7 @@ class LibraryApp {
                     this.deleteBook(bookId);
                 }
             });
+
             
         }
     }
@@ -135,40 +151,69 @@ class LibraryApp {
         request.send(newUser);
     }
 
-    async loadBooks(searchTerm = '') {
+    filterBooks() {
+        const searchTerm = document.querySelector("#search-books")?.value.trim().toLowerCase() || "";
+        const shelfFilter = document.querySelectorAll(".filter-select")[0].value; // shelf
+        const statusFilter = document.querySelectorAll(".filter-select")[1].value; // status
+        console.log(shelfFilter);
+        console.log(statusFilter);
+    
+        const filteredBooks = this.books.filter(book => {
+            console.log(book.shelf);
+            const matchesSearch = searchTerm === "" || book.title.toLowerCase().includes(searchTerm) || book.author.toLowerCase().includes(searchTerm);
+            const matchesShelf = shelfFilter === "" || book.shelf === shelfFilter;
+            const matchesStatus = statusFilter === "" || book.status === statusFilter;
+    
+            return matchesSearch && matchesShelf && matchesStatus;
+        });
+    
+        this.displayBooks(filteredBooks);
+    }
+
+    displayBooks(books) {    //just for display the books
+        const booksList = document.getElementById('books-list');
+    
+        if (books.length === 0) {
+            booksList.innerHTML = `<tr><td colspan="8" style="text-align: center;">אין ספרים להצגה</td></tr>`;
+            return;
+        }
+    
+        booksList.innerHTML = books.map(book => `
+            <tr>
+                <td><img src="${book.image}" alt="${book.title} Image" /></td>
+                <td>${book.title}</td>
+                <td>${book.author}</td>
+                <td>${book.year}</td>
+                <td>${book.id}</td>
+                <td>${book.category}</td>
+                <td>${book.shelf}</td>
+                <td>${book.status}</td>
+                <td>
+                    <button class="edit-btn" onclick="editBook('${book.id}')"> ערוך</button>
+                    <button class="delete-btn" data-book-id="${book.id}"> מחק</button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    async loadBooks() {
         const request = new FXMLHttpRequest();
         request.open("GET", "/books", "BooksServer");
         request.onerror = (error) => {
             document.getElementById('books-list').innerHTML = `<tr><td colspan="8">Error: ${error.error}</td></tr>`;
         };
         request.onload = (books) => {
-            const booksList = document.getElementById('books-list');
             if (!books || books.length === 0) {
-                booksList.innerHTML = `<tr><td colspan="8" style="text-align: center;">אין ספרים להצגה</td></tr>`;
+                this.displayBooks([]);
                 return;
             }
-            
-            const filteredBooks = books.filter(book => book.title.includes(searchTerm)||book.author.includes(searchTerm));
-            
-            booksList.innerHTML = filteredBooks.map(book => `
-                <tr>
-                    <td><img src="${book.image}" alt="${book.title} Image" /></td>
-                    <td>${book.title}</td>
-                    <td>${book.author}</td>
-                    <td>${book.year}</td>
-                    <td>${book.id}</td>
-                    <td>${book.category}</td>
-                    <td>${book.shelf}</td>
-                    <td>${book.status}</td>
-                    <td>
-                        <button class="edit-btn" onclick="editBook('${book.id}')"> ערוך</button>
-                        <button class="delete-btn" data-book-id="${book.id}"> מחק</button>
-                    </td>
-                </tr>
-            `).join('');
+            this.books = books; // save the books in the global varible
+            this.displayBooks(this.books);
         };
         request.send();
     }
+
+    
 
     async getBook(bookId) {
         const request = new FXMLHttpRequest();

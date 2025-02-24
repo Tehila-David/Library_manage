@@ -73,20 +73,24 @@
         </div>
 
         <div class="search-filters">
-          <input type="text" id="search-books" placeholder="חיפוש לפי שם ספר, מחבר או ISBN...">
+          <input type="text" id="search-books" placeholder="חיפוש לפי שם ספר או מחבר">
           <select class="filter-select">
             <option value="">מיקום במדף</option>
-            <option value="a1">מדף A1</option>
-            <option value="a2">מדף A2</option>
-            <option value="b1">מדף B1</option>
+            <option value="A1">מדף A1</option>
+            <option value="A2">מדף A2</option>
+            <option value="B1">מדף B1</option>
+            <option value="B2">מדף B2</option>
+
           </select>
           <select class="filter-select">
             <option value="">סטטוס</option>
             <option value="available">זמין</option>
             <option value="borrowed">מושאל</option>
             <option value="late">באיחור</option>
+            <option value="unavailable">לא זמין</option>
+
           </select>
-          <button class="btn">חפש</button>
+          <button class="btn" id="filter-btn">חפש</button>
         </div>
 
         <table class="books-table">
@@ -171,6 +175,7 @@
         <option value="">בחר סטטוס</option>
         <option value="available">זמין</option>
         <option value="loaned">הושאל</option>
+        <option value="late">באיחור</option>
         <option value="unavailable">לא זמין</option>
       </select>
 
