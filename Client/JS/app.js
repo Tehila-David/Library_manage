@@ -76,7 +76,6 @@ class LibraryApp {
             });
 
             document.getElementById('filter-btn').addEventListener("click", () => {
-                console.log("hi");
                 this.filterBooks();
             });
 
