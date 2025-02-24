@@ -5,19 +5,6 @@ class LibraryApp {
         this.initEventListeners();
     }
 
-    // Add this method to initialize global event listeners
-    initEventListeners() {
-        // Using event delegation for dynamically added delete buttons
-        document.addEventListener('click', (e) => {
-            if (e.target.matches('.delete-btn')) {
-                e.preventDefault();
-                const bookId = e.target.getAttribute('data-book-id');
-                this.deleteBook(bookId);
-            }
-        });
-    }
-
-
     // Function to initialize the routing system. It listens for changes in the URL hash and calls the appropriate functions for each route.
     initRouter() {
         const routes = {
@@ -77,9 +64,20 @@ class LibraryApp {
         if (template) {
             document.getElementById('router-view').innerHTML = template.innerHTML;
             this.loadBooks();  // Load the books when rendering the books page
+            document.getElementById('search-books').addEventListener('input', (e) => {
+                this.loadBooks(e.target.value);
+            });
             document.getElementById('add-book-btn')?.addEventListener('click', () => {
                 window.location.hash = '/add-book'; // Navigate to the add-book page
             });
+            document.addEventListener('click', (e) => {
+                if (e.target.matches('.delete-btn')) {
+                    e.preventDefault();
+                    const bookId = e.target.getAttribute('data-book-id');
+                    this.deleteBook(bookId);
+                }
+            });
+            
         }
     }
 
@@ -138,38 +136,37 @@ class LibraryApp {
         request.send(newUser);
     }
 
-    async loadBooks() {
+    async loadBooks(searchTerm = '') {
         const request = new FXMLHttpRequest();
-        request.open("GET", "/books", "BooksServer"); // No ID for getting all books
+        request.open("GET", "/books", "BooksServer");
         request.onerror = (error) => {
-            const booksList = document.getElementById('books-list');
-            booksList.innerHTML = `<tr><td colspan="8" class="text-center">Error loading books: ${error.error}</td></tr>`;
+            document.getElementById('books-list').innerHTML = `<tr><td colspan="8">Error: ${error.error}</td></tr>`;
         };
         request.onload = (books) => {
             const booksList = document.getElementById('books-list');
             if (!books || books.length === 0) {
-                console.log(books);
                 booksList.innerHTML = `<tr><td colspan="8" style="text-align: center;">אין ספרים להצגה</td></tr>`;
                 return;
             }
-            booksList.innerHTML = books.map(book => `
-              <tr>
-                <td><img src="${book.image}" alt="${book.title} Image" /></td> <!-- עמודת התמונה -->
-                <td>${book.title}</td>
-                <td>${book.author}</td>
-                <td>${book.year}</td>
-                <td>${book.id}</td>
-                <td>${book.category}</td> <!-- הצגת הקטגוריה -->
-                <td>${book.shelf}</td>
-                <td>${book.status}</td> <!-- הצגת שנת הוצאה -->
-                <td>
-                    <button class="edit-btn" onclick="editBook('${book.id}')"> ערוך</button>
-                    <button class="delete-btn" data-book-id="${book.id}"> מחק</button>
-                </td>
-            </tr>
-
-        `).join(''); // Create a list of book cards to display
-
+            
+            const filteredBooks = books.filter(book => book.title.includes(searchTerm));
+            
+            booksList.innerHTML = filteredBooks.map(book => `
+                <tr>
+                    <td><img src="${book.image}" alt="${book.title} Image" /></td>
+                    <td>${book.title}</td>
+                    <td>${book.author}</td>
+                    <td>${book.year}</td>
+                    <td>${book.id}</td>
+                    <td>${book.category}</td>
+                    <td>${book.shelf}</td>
+                    <td>${book.status}</td>
+                    <td>
+                        <button class="edit-btn" onclick="editBook('${book.id}')"> ערוך</button>
+                        <button class="delete-btn" data-book-id="${book.id}"> מחק</button>
+                    </td>
+                </tr>
+            `).join('');
         };
         request.send();
     }
@@ -237,6 +234,7 @@ class LibraryApp {
         };
         request.send();
     }
+    
 
 }
 
