@@ -2,7 +2,21 @@ class LibraryApp {
     constructor() {
         this.currentUser = null;
         this.initRouter(); // Initialize the routing system when the object is created
+        this.initEventListeners();
     }
+
+    // Add this method to initialize global event listeners
+    initEventListeners() {
+        // Using event delegation for dynamically added delete buttons
+        document.addEventListener('click', (e) => {
+            if (e.target.matches('.delete-btn')) {
+                e.preventDefault();
+                const bookId = e.target.getAttribute('data-book-id');
+                this.deleteBook(bookId);
+            }
+        });
+    }
+
 
     // Function to initialize the routing system. It listens for changes in the URL hash and calls the appropriate functions for each route.
     initRouter() {
@@ -124,53 +138,6 @@ class LibraryApp {
         request.send(newUser);
     }
 
-    // Function to handle adding a new book to the system
-    /*async handleAddBook(event) {
-        event.preventDefault();
-    
-        // שליפת פרטי הספר מהשדות בטופס
-        const title = document.getElementById('book-title').value;
-        const author = document.getElementById('book-author').value;
-        const shelf = document.getElementById('book-shelf').value;
-        const year = document.getElementById('book-year').value;
-        const category = document.getElementById('book-category').value;
-        const image = document.getElementById('book-image').value;
-        const status = document.getElementById('book-status').value;
-
-    
-        // שליפת המזהה האחרון שנשמר ב-localStorage, או אתחול ל-1
-       let lastId = localStorage.getItem('lastBookId') || 10000;
-       lastId = Number(lastId) + 1;
-       localStorage.setItem('lastBookId', lastId);
-    
-       
-        // יצירת אובייקט ספר חדש עם כל הפרטים
-        const newBook = {
-            id: lastId,
-            title: title,
-            author: author,
-            shelf: shelf,
-            year: year,
-            category: category,
-            image: image,
-            status: status
-        };
-        
-    
-        const request = new FXMLHttpRequest();
-        request.open("POST", "/add-book", "BooksServer"); // עדכן את כתובת ה-URL לפי הצורך
-        request.onload = (book) => {
-            if (book) {
-                alert("The book has been successfully added!");
-                window.location.hash = '/books'; // מעבר לעמוד הספרים לאחר הוספת הספר
-            } else {
-                alert("There was an error adding the book.");
-            }
-        };
-        request.send(newBook);
-    }*/
-    
-
     async loadBooks() {
         const request = new FXMLHttpRequest();
         request.open("GET", "/books", "BooksServer"); // No ID for getting all books
@@ -197,7 +164,7 @@ class LibraryApp {
                 <td>${book.status}</td> <!-- הצגת שנת הוצאה -->
                 <td>
                     <button class="edit-btn" onclick="editBook('${book.id}')"> ערוך</button>
-                    <button class="delete-btn" onclick="deleteBook('${book.id}')"> מחק</button>
+                    <button class="delete-btn" data-book-id="${book.id}"> מחק</button>
                 </td>
             </tr>
 
@@ -258,6 +225,7 @@ class LibraryApp {
     }
 
     async deleteBook(bookId) {
+        console.log(bookId);
         const request = new FXMLHttpRequest();
         request.open("DELETE", `/books/${bookId}`, "BooksServer"); // With ID for deleting
         request.onerror = (error) => {

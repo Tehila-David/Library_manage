@@ -15,7 +15,7 @@ class BooksDB {
       let lastId = localStorage.getItem('lastBookId') || 10000;
       lastId = Number(lastId) + 1;
       localStorage.setItem('lastBookId', lastId);
-      return lastId;
+      return JSON.stringify(lastId);
   }
 
   // Add a new book if the title does not already exist
@@ -56,14 +56,15 @@ class BooksDB {
   }
 
   // Delete book by ID
-  deleteBook(bookId) {
-      const books = this.loadBooks();
-      const index = books.findIndex((book) => book.id === bookId);
-      if (index !== -1) {
-          books.splice(index, 1);
-          this.saveBooks(books);
-          return true;
-      }
-      return false;
-  }
+    deleteBook(bookId) {
+        const books = this.loadBooks();
+        console.log(books);
+        const index = books.findIndex((book) => book.id === bookId);
+        if (index !== -1) {
+            books.splice(index, 1);
+            this.saveBooks(books);
+            return true;
+        }
+        return false;
+    }
 }
