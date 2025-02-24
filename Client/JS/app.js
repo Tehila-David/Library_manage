@@ -189,8 +189,8 @@ class LibraryApp {
                 <td>${book.shelf}</td>
                 <td>${book.status}</td>
                 <td>
-                    <button class="edit-btn" onclick="editBook('${book.id}')"> ערוך</button>
-                    <button class="delete-btn" data-book-id="${book.id}"> מחק</button>
+                    <button class="edit-btn"> <i class="fa-regular fa-pen-to-square"></i></button>
+                    <button class="delete-btn" data-book-id="${book.id}"><i class="fa-solid fa-trash"></i></button>
                 </td>
             </tr>
         `).join('');
