@@ -125,7 +125,7 @@ class LibraryApp {
     }
 
     // Function to handle adding a new book to the system
-    async handleAddBook(event) {
+    /*async handleAddBook(event) {
         event.preventDefault();
     
         // שליפת פרטי הספר מהשדות בטופס
@@ -168,13 +168,16 @@ class LibraryApp {
             }
         };
         request.send(newBook);
-    }
+    }*/
     
 
-    // Function to load books from the server and display them
     async loadBooks() {
         const request = new FXMLHttpRequest();
-        request.open("GET", "", "BooksServer"); // Replace with the URL where books are stored
+        request.open("GET", "/books", "BooksServer"); // No ID for getting all books
+        request.onerror = (error) => {
+            const booksList = document.getElementById('books-list');
+            booksList.innerHTML = `<tr><td colspan="8" class="text-center">Error loading books: ${error.error}</td></tr>`;
+        };
         request.onload = (books) => {
             const booksList = document.getElementById('books-list');
             if (!books || books.length === 0) {
@@ -199,8 +202,72 @@ class LibraryApp {
             </tr>
 
         `).join(''); // Create a list of book cards to display
+
         };
-        request.send("books"); // Send the request to load books from the server
+        request.send();
+    }
+
+    async getBook(bookId) {
+        const request = new FXMLHttpRequest();
+        request.open("GET", `/books/${bookId}`, "BooksServer"); // With ID for specific book
+        request.onerror = (error) => {
+            alert(`Error loading book: ${error.error}`);
+        };
+        request.onload = (book) => {
+            // Handle single book data
+        };
+        request.send();
+    }
+
+    async handleAddBook(event) {
+        event.preventDefault();
+        
+        const bookData = {
+            title: document.getElementById('book-title').value,
+            author: document.getElementById('book-author').value,
+            shelf: document.getElementById('book-shelf').value,
+            year: document.getElementById('book-year').value,
+            category: document.getElementById('book-category').value,
+            image: document.getElementById('book-image').value,
+            status: document.getElementById('book-status').value
+        };
+
+        const request = new FXMLHttpRequest();
+        request.open("POST", "/books", "BooksServer"); // No ID for creating new book
+        request.onerror = (error) => {
+            alert(error.error || "There was an error adding the book.");
+        };
+        request.onload = (book) => {
+            alert(`The book ${book.title} has been successfully added!`);
+            window.location.hash = '/books';
+        };
+        request.send(bookData);
+    }
+
+    async updateBook(bookId, bookData) {
+        const request = new FXMLHttpRequest();
+        request.open("PUT", `/books/${bookId}`, "BooksServer"); // With ID for updating
+        request.onerror = (error) => {
+            alert(error.error || "There was an error updating the book.");
+        };
+        request.onload = (book) => {
+            alert("The book has been successfully updated!");
+            window.location.hash = '/books';
+        };
+        request.send(bookData);
+    }
+
+    async deleteBook(bookId) {
+        const request = new FXMLHttpRequest();
+        request.open("DELETE", `/books/${bookId}`, "BooksServer"); // With ID for deleting
+        request.onerror = (error) => {
+            alert(error.error || "There was an error deleting the book.");
+        };
+        request.onload = () => {
+            alert("The book has been successfully deleted!");
+            this.loadBooks(); // Refresh the book list
+        };
+        request.send();
     }
 
 }

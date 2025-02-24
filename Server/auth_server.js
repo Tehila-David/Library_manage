@@ -1,4 +1,3 @@
-// Enhanced AuthServer with proper response formatting
 class AuthServer {
     constructor() {
         this.db = new UsersDB();
@@ -7,20 +6,22 @@ class AuthServer {
     requestHandler(data, callback) {
         try {
             const parsedData = JSON.parse(data);
+            const { method, id } = parsedData.data;
             const object = parsedData.object;
-            const method = parsedData.data.method;
 
             switch (method) {
                 case 'GET':
                     if (object === 'users') {
+                        // Get all users
                         const users = this.db.loadUsers();
                         callback({
                             status: 200,
                             statusText: 'OK',
                             data: users
                         });
-                    } else if (object.userName) {
-                        const user = this.db.getUser(object.userName);
+                    } else if (id) {
+                        // Get specific user
+                        const user = this.db.getUser(id);
                         if (user) {
                             callback({
                                 status: 200,
@@ -40,39 +41,95 @@ class AuthServer {
                             status: 400,
                             statusText: 'Bad Request',
                             data: null,
-                            error: 'Invalid object'
+                            error: 'Invalid request'
                         });
                     }
                     break;
 
                 case 'POST':
-                    if (object.userName && object.password) {
-                        const result = this.db.addUser(object);
-                        if (result) {
-                            callback({
-                                status: 201,
-                                statusText: 'Created',
-                                data: result
-                            });
-                        } else {
-                            callback({
-                                status: 409,
-                                statusText: 'Conflict',
-                                data: null,
-                                error: 'User already exists'
-                            });
-                        }
-                    } else {
+                    if (!object.userName || !object.password) {
                         callback({
                             status: 400,
                             statusText: 'Bad Request',
                             data: null,
                             error: 'Missing required fields'
                         });
+                        return;
+                    }
+
+                    const result = this.db.addUser(object);
+                    if (result) {
+                        callback({
+                            status: 201,
+                            statusText: 'Created',
+                            data: result
+                        });
+                    } else {
+                        callback({
+                            status: 409,
+                            statusText: 'Conflict',
+                            data: null,
+                            error: 'User already exists'
+                        });
                     }
                     break;
 
-                // Similar pattern for PUT and DELETE...
+                case 'PUT':
+                    if (!id) {
+                        callback({
+                            status: 400,
+                            statusText: 'Bad Request',
+                            data: null,
+                            error: 'PUT request requires an ID'
+                        });
+                        return;
+                    }
+
+                    const updatedUser = this.db.updateUser(id, object);
+                    if (updatedUser) {
+                        callback({
+                            status: 200,
+                            statusText: 'OK',
+                            data: updatedUser
+                        });
+                    } else {
+                        callback({
+                            status: 404,
+                            statusText: 'Not Found',
+                            data: null,
+                            error: 'User not found'
+                        });
+                    }
+                    break;
+
+                case 'DELETE':
+                    if (!id) {
+                        callback({
+                            status: 400,
+                            statusText: 'Bad Request',
+                            data: null,
+                            error: 'DELETE request requires an ID'
+                        });
+                        return;
+                    }
+
+                    const deleted = this.db.deleteUser(id);
+                    if (deleted) {
+                        callback({
+                            status: 200,
+                            statusText: 'OK',
+                            data: { message: 'User deleted successfully' }
+                        });
+                    } else {
+                        callback({
+                            status: 404,
+                            statusText: 'Not Found',
+                            data: null,
+                            error: 'User not found'
+                        });
+                    }
+                    break;
+
                 default:
                     callback({
                         status: 405,

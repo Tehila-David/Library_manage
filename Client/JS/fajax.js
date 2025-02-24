@@ -71,7 +71,7 @@
 
 class FXMLHttpRequest {
     constructor() {
-        this.readyState = 0; // 0: UNSENT, 1: OPENED, 2: HEADERS_RECEIVED, 3: LOADING, 4: DONE
+        this.readyState = 0;
         this.status = null;
         this.statusText = '';
         this.response = null;
@@ -84,7 +84,16 @@ class FXMLHttpRequest {
 
     open(method, url, serverType = "AuthServer") {
         this.readyState = 1;
-        this.data = { method, url, serverType };
+        // Parse the URL to extract potential ID
+        const urlParts = url.split('/').filter(part => part);
+        const id = urlParts[urlParts.length - 1];
+        
+        this.data = { 
+            method, 
+            url,
+            serverType,
+            id: !isNaN(id) ? id : null // Store ID if it exists
+        };
     }
 
     send(object = "") {
@@ -117,7 +126,7 @@ class FXMLHttpRequest {
                     this.response = response.data;
                     this.retryCount = 0;
                     
-                    if (this.status >= 200 && this.status < 300) { //when successfuly
+                    if (this.status >= 200 && this.status < 300) {
                         if (this.onload) {
                             this.onload(this.response);
                         }
