@@ -177,6 +177,11 @@ class LibraryApp {
         request.open("GET", "", "BooksServer"); // Replace with the URL where books are stored
         request.onload = (books) => {
             const booksList = document.getElementById('books-list');
+            if (!books || books.length === 0) {
+                console.log(books);
+                booksList.innerHTML = `<tr><td colspan="8" style="text-align: center;">אין ספרים להצגה</td></tr>`;
+                return;
+            }
             booksList.innerHTML = books.map(book => `
               <tr>
                 <td><img src="${book.image}" alt="${book.title} Image" /></td> <!-- עמודת התמונה -->

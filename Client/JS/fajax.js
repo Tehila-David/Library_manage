@@ -71,38 +71,63 @@
 
 class FXMLHttpRequest {
     constructor() {
-        this.readyState = 0;      // Initial state (0 means the request has not been sent yet)
-        this.status = null;       // Status of the request (null initially)
-        this.response = null;     // Response content (null initially)
-        this.onload = null;       // Callback function to be triggered when the request succeeds
-        this.data = {};           // Holds request data like method, URL, and server type
+        this.readyState = 0; // 0: UNSENT, 1: OPENED, 2: HEADERS_RECEIVED, 3: LOADING, 4: DONE
+        this.status = null;
+        this.statusText = '';
+        this.response = null;
+        this.onload = null;
+        this.onerror = null;
+        this.data = {};
+        this.retryCount = 0;
+        this.maxRetries = 3;
     }
 
-    /**
-     * Initializes the request with method, URL, and optional server type
-     * @param {string} method - The HTTP method (GET, POST, etc.)
-     * @param {string} url - The URL for the request
-     * @param {string} serverType - The type of the server (default is 'AuthServer')
-     */
     open(method, url, serverType = "AuthServer") {
+        this.readyState = 1;
         this.data = { method, url, serverType };
     }
 
-    /**
-     * Sends the request with optional data
-     * @param {string} object - Data to be sent with the request (optional)
-     */
     send(object = "") {
+        console.log("Sending request...");
+        this.readyState = 2;
+
         let network = new Network();
         const data = this.data;
-        network.sendToServer(JSON.stringify({ data, object }), this.onload); // Send request to server
-    }
 
-    abort() {
-        // Logic to abort the request (to be implemented)
-    }
+        const trySending = () => {
+            network.sendToServer(JSON.stringify({ data, object }), (response) => {
+                if (!response) {
+                    console.warn(`Request failed, retrying... (${this.retryCount + 1}/${this.maxRetries})`);
+                    
+                    if (this.retryCount < this.maxRetries) {
+                        this.retryCount++;
+                        setTimeout(trySending, 1000);
+                    } else {
+                        this.readyState = 4;
+                        this.status = 503;
+                        this.statusText = 'Service Unavailable';
+                        if (this.onerror) {
+                            this.onerror({ status: this.status, statusText: this.statusText });
+                        }
+                    }
+                } else {
+                    this.readyState = 4;
+                    this.status = response.status;
+                    this.statusText = response.statusText;
+                    this.response = response.data;
+                    this.retryCount = 0;
+                    
+                    if (this.status >= 200 && this.status < 300) { //when successfuly
+                        if (this.onload) {
+                            this.onload(this.response);
+                        }
+                    } else if (this.onerror) {
+                        this.onerror(response);
+                    }
+                }
+            });
+        };
 
-    setRequestHeader(header, value) {
-        // Logic to set request headers (to be implemented)
+        trySending();
     }
 }

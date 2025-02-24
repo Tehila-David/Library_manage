@@ -1,38 +1,44 @@
-// Network class to handle requests to different servers (AuthServer or BooksServer)
+// Enhanced Network class with improved error handling
 class Network {
-    // Create instances of the servers
-    serverAuth = new AuthServer();  // Instance of AuthServer
-    serverBooks = new BooksServer(); // Instance of BooksServer
-    dropRate = 0.3; // drop rate between 10% and 50%
+    serverAuth = new AuthServer();
+    serverBooks = new BooksServer();
+    dropRate = 0.3;
 
-    sendToServer(request, func = () => { }) {
-        console.log("Received request:", request);
+    sendToServer(request, callback) {
+        console.log("Processing request:", request);
 
-        // Check if the message should be dropped based on the drop rate probability
         if (Math.random() < this.dropRate) {
-            console.warn("Message dropped:", request);
+            console.warn("Message dropped");
+            callback(null); //in order we will know that was dropping
             return;
         }
 
-        // Random delay between 1 to 3 seconds before sending the request
         const delay = Math.random() * 2000 + 1000;
         setTimeout(() => {
             try {
-                const requestObj = JSON.parse(request); // Parse the request JSON
-                const serverType = requestObj.data.serverType; // Extract server type
+                const requestObj = JSON.parse(request);
+                const serverType = requestObj.data.serverType;
 
-                // Route the request to the appropriate server based on serverType
                 if (serverType === 'AuthServer') {
-                    this.serverAuth.requestHandler(request, func);
+                    this.serverAuth.requestHandler(request, callback);
                 } else if (serverType === 'BooksServer') {
-                    this.serverBooks.requestHandler(request, func);
+                    this.serverBooks.requestHandler(request, callback);
                 } else {
-                    console.error("Unknown server type:", serverType);
+                    callback({
+                        status: 400,
+                        statusText: 'Bad Request',
+                        data: null,
+                        error: `Unknown server type: ${serverType}`
+                    });
                 }
             } catch (error) {
-                console.error("Invalid request format:", error);
+                callback({
+                    status: 400,
+                    statusText: 'Bad Request',
+                    data: null,
+                    error: 'Invalid request format'
+                });
             }
         }, delay);
     }
 }
-
