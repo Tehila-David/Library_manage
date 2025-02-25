@@ -113,6 +113,7 @@ class LibraryApp {
         const request = new FXMLHttpRequest();
         request.open("GET", "");
         request.onload = (users) => {
+            this.hideLoading();
             var user = users.find((user) => user.userName === username);
             if (user) {
                 if (user.password === password) {
@@ -124,6 +125,7 @@ class LibraryApp {
                 alert("The user does not exist.");
             }
         };
+        this.showLoading();
         request.send("users");
     }
 
@@ -139,6 +141,7 @@ class LibraryApp {
         const request = new FXMLHttpRequest();
         request.open("POST", "");
         request.onload = (user) => {
+            this.hideLoading();
             if (user) {
                 alert("Registration successful!");
                 this.currentUser = user;
@@ -147,6 +150,7 @@ class LibraryApp {
                 alert("The user already exists.");
             }
         };
+        this.showLoading();
         request.send(newUser);
     }
 
@@ -167,6 +171,117 @@ class LibraryApp {
         });
     
         this.displayBooks(filteredBooks);
+    }
+
+    async loadBooks() {
+        const request = new FXMLHttpRequest();
+        request.open("GET", "/books", "BooksServer");
+        request.onerror = (error) => {
+            document.getElementById('books-list').innerHTML = `<tr><td colspan="8">Error: ${error.error}</td></tr>`;
+        };
+        request.onload = (books) => {
+            this.hideLoading();
+            if (!books || books.length === 0) {
+                this.displayBooks([]);
+                return;
+            }
+            this.books = books; // save the books in the global varible
+            this.displayBooks(this.books);
+        };
+        this.showLoading();
+        request.send();
+    }
+
+    
+
+    async getBook(bookId) {
+        const request = new FXMLHttpRequest();
+        request.open("GET", `/books/${bookId}`, "BooksServer"); // With ID for specific book
+        request.onerror = (error) => {
+            this.hideLoading();
+            setTimeout(() => {  //the timeout is in order to the code will can be hide the loading before alert
+                alert(`Error loading book: ${error.error}`);
+            }, 30);
+        };
+        request.onload = (book) => {
+            this.hideLoading();
+            // Handle single book data
+        };
+        this.showLoading();
+        request.send();
+    }
+
+    async handleAddBook(event) {
+        event.preventDefault();
+        
+        const bookData = {
+            title: document.getElementById('book-title').value,
+            author: document.getElementById('book-author').value,
+            shelf: document.getElementById('book-shelf').value,
+            year: document.getElementById('book-year').value,
+            category: document.getElementById('book-category').value,
+            image: document.getElementById('book-image').value,
+            status: document.getElementById('book-status').value
+        };
+
+        const request = new FXMLHttpRequest();
+        request.open("POST", "/books", "BooksServer"); // No ID for creating new book
+        request.onerror = (error) => {
+            this.hideLoading();
+            setTimeout(() => {  //the timeout is in order to the code will can be hide the loading before alert
+                alert(error.error || "There was an error adding the book.");
+            }, 30);
+        };
+        request.onload = (book) => {
+            this.hideLoading();
+            setTimeout(() => {  //the timeout is in order to the code will can be hide the loading before alert
+                alert(`The book ${book.title} has been successfully added!`);
+                window.location.hash = '/books';
+            },30);
+        };
+        this.showLoading();
+        request.send(bookData);
+    }
+
+    async updateBook(bookId, bookData) {
+        const request = new FXMLHttpRequest();
+        request.open("PUT", `/books/${bookId}`, "BooksServer"); // With ID for updating
+        request.onerror = (error) => {
+            this.hideLoading();
+            setTimeout(() => {  //the timeout is in order to the code will can be hide the loading before alert
+                alert(error.error || "There was an error updating the book.");
+            }, 30);
+        };
+        request.onload = (book) => {
+            this.hideLoading();
+            setTimeout(() => {  //the timeout is in order to the code will can be hide the loading before alert
+                alert("The book has been successfully updated!");
+                window.location.hash = '/books';
+            }, 30);
+        };
+        this.showLoading();
+        request.send(bookData);
+    }
+
+    async deleteBook(bookId) {
+        console.log(bookId);
+        const request = new FXMLHttpRequest();
+        request.open("DELETE", `/books/${bookId}`, "BooksServer"); // With ID for deleting
+        request.onerror = (error) => {
+            this.hideLoading();
+            setTimeout(() => {  //the timeout is in order to the code will can be hide the loading before alert
+                alert(error.error || "There was an error deleting the book.");
+            }, 30);
+        };
+        request.onload = () => {
+            this.hideLoading();
+            setTimeout(() => {  //the timeout is in order to the code will can be hide the loading before alert
+                alert("The book has been successfully deleted!");
+                this.loadBooks(); // Refresh the book list
+            }, 30);
+        };
+        this.showLoading();
+        request.send();
     }
 
     displayBooks(books) {    //just for display the books
@@ -195,87 +310,13 @@ class LibraryApp {
         `).join('');
     }
 
-    async loadBooks() {
-        const request = new FXMLHttpRequest();
-        request.open("GET", "/books", "BooksServer");
-        request.onerror = (error) => {
-            document.getElementById('books-list').innerHTML = `<tr><td colspan="8">Error: ${error.error}</td></tr>`;
-        };
-        request.onload = (books) => {
-            if (!books || books.length === 0) {
-                this.displayBooks([]);
-                return;
-            }
-            this.books = books; // save the books in the global varible
-            this.displayBooks(this.books);
-        };
-        request.send();
-    }
 
+    showLoading() {
+        document.getElementById("loading").style.display = "block";
+    }
     
-
-    async getBook(bookId) {
-        const request = new FXMLHttpRequest();
-        request.open("GET", `/books/${bookId}`, "BooksServer"); // With ID for specific book
-        request.onerror = (error) => {
-            alert(`Error loading book: ${error.error}`);
-        };
-        request.onload = (book) => {
-            // Handle single book data
-        };
-        request.send();
-    }
-
-    async handleAddBook(event) {
-        event.preventDefault();
-        
-        const bookData = {
-            title: document.getElementById('book-title').value,
-            author: document.getElementById('book-author').value,
-            shelf: document.getElementById('book-shelf').value,
-            year: document.getElementById('book-year').value,
-            category: document.getElementById('book-category').value,
-            image: document.getElementById('book-image').value,
-            status: document.getElementById('book-status').value
-        };
-
-        const request = new FXMLHttpRequest();
-        request.open("POST", "/books", "BooksServer"); // No ID for creating new book
-        request.onerror = (error) => {
-            alert(error.error || "There was an error adding the book.");
-        };
-        request.onload = (book) => {
-            alert(`The book ${book.title} has been successfully added!`);
-            window.location.hash = '/books';
-        };
-        request.send(bookData);
-    }
-
-    async updateBook(bookId, bookData) {
-        const request = new FXMLHttpRequest();
-        request.open("PUT", `/books/${bookId}`, "BooksServer"); // With ID for updating
-        request.onerror = (error) => {
-            alert(error.error || "There was an error updating the book.");
-        };
-        request.onload = (book) => {
-            alert("The book has been successfully updated!");
-            window.location.hash = '/books';
-        };
-        request.send(bookData);
-    }
-
-    async deleteBook(bookId) {
-        console.log(bookId);
-        const request = new FXMLHttpRequest();
-        request.open("DELETE", `/books/${bookId}`, "BooksServer"); // With ID for deleting
-        request.onerror = (error) => {
-            alert(error.error || "There was an error deleting the book.");
-        };
-        request.onload = () => {
-            alert("The book has been successfully deleted!");
-            this.loadBooks(); // Refresh the book list
-        };
-        request.send();
+    hideLoading() {
+        document.getElementById("loading").style.display = "none";
     }
     
 
