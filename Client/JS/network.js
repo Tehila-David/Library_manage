@@ -13,7 +13,7 @@ class Network {
             return;
         }
 
-        const delay = Math.random() * 2000;
+        const delay = Math.random() * 2000+1000;
         setTimeout(() => {
             try {
                 const requestObj = JSON.parse(request);

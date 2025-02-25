@@ -11,7 +11,9 @@ class LibraryApp {
             '/login': this.renderLoginPage.bind(this),
             '/register': this.renderRegisterPage.bind(this),
             '/books': this.renderBooksPage.bind(this),
-            '/add-book': this.renderAddBookPage.bind(this)
+            '/add-book': this.renderAddBookPage.bind(this),
+            '/edit-book/:id':(params) => this.renderEditBookPage(params)
+
         };
 
         // Adding event listeners for hash changes and page load
@@ -21,15 +23,50 @@ class LibraryApp {
 
     // Function to handle routing based on the current URL hash and render the appropriate page
     handleRouting(routes) {
-        const path = window.location.hash.slice(1) || '/login'; // Get the current hash from the URL, default to '/login'
-        const renderFunction = routes[path]; // Choose the render function based on the route
-
-        if (renderFunction) {
-            document.getElementById('router-view').innerHTML = '';  // Clear the current content
-            renderFunction();  // Call the render function for the current route
-        } else {
-            console.error(`Route not found: ${path}`);  // Log an error if the route is not found
+        const path = window.location.hash.slice(1) || '/login';
+        console.log(path);
+        
+        // בדיקה עבור נתיבים קבועים
+        if (routes[path]) {
+            document.getElementById('router-view').innerHTML = '';
+            routes[path]();
+            return;
         }
+        
+        // בדיקה עבור נתיבים דינמיים
+        const pathParts = path.split('/');
+        
+        for (const route in routes) {
+            const routeParts = route.split('/');
+            
+            // אם מספר החלקים בנתיב שונה, זה לא התאמה
+            if (routeParts.length !== pathParts.length) continue;
+            
+            let match = true;
+            const params = {};
+            
+            for (let i = 0; i < routeParts.length; i++) {
+                // אם זה חלק דינמי (מתחיל עם :)
+                if (routeParts[i].startsWith(':')) {
+                    const paramName = routeParts[i].substring(1);
+                    params[paramName] = pathParts[i];
+                } 
+                // אם זה חלק סטטי וערכים לא תואמים
+                else if (routeParts[i] !== pathParts[i]) {
+                    match = false;
+                    break;
+                }
+            }
+            
+            if (match) {
+                document.getElementById('router-view').innerHTML = '';
+                routes[route](params);
+                return;
+            }
+        }
+        
+        // לא נמצא נתיב מתאים
+        console.error(`Route not found: ${path}`);
     }
 
     // Function to render the login page
@@ -88,6 +125,14 @@ class LibraryApp {
                     e.preventDefault();
                     const bookId = e.target.getAttribute('data-book-id');
                     this.deleteBook(bookId);
+                }
+            });
+            document.addEventListener('click', (e) => {
+                if (e.target.matches('.edit-btn')) {
+                    e.preventDefault();
+                    const bookId = e.target.getAttribute('data-book-id');
+                    console.log("hii edit");
+                    window.location.hash = `/edit-book/${bookId}`;
                 }
             });
 
@@ -283,6 +328,78 @@ class LibraryApp {
         this.showLoading();
         request.send();
     }
+    renderEditBookPage(params) {
+        const bookId = params.id;
+        console.log(`עריכת ספר עם מזהה: ${bookId}`);
+        const template = document.getElementById('edit-book-template');
+        if (template) {
+            document.getElementById('router-view').innerHTML = template.innerHTML;
+            
+            // מציאת מזהה הספר מהכתובת
+            const url = window.location.hash;
+            const bookId = url.split('/').pop();
+            
+            // טעינת פרטי הספר הקיים ומילוי הטופס
+            this.loadBookForEdit(bookId);
+            
+            // הוספת מאזיני אירועים
+            document.getElementById('edit-book-form')?.addEventListener('submit', (e) => this.handleEditBook(e));
+            document.querySelector('.btn-cancel')?.addEventListener('click', () => {
+                window.location.hash = '/books'; // חזרה לדף הספרים
+            });
+        }
+    }
+    
+    // פונקציה להוספה
+    async loadBookForEdit(bookId) {
+        const request = new FXMLHttpRequest();
+        request.open("GET", `/books/${bookId}`, "BooksServer");
+        request.onerror = (error) => {
+            this.hideLoading();
+            setTimeout(() => {
+                alert(`שגיאה בטעינת פרטי הספר: ${error.error}`);
+                window.location.hash = '/books';
+            }, 30);
+        };
+        request.onload = (book) => {
+            this.hideLoading();
+            if (book) {
+                // מילוי הטופס בפרטי הספר
+                document.getElementById('edit-book-id').value = book.id;
+                document.getElementById('edit-book-title').value = book.title;
+                document.getElementById('edit-book-author').value = book.author;
+                document.getElementById('edit-book-category').value = book.category;
+                document.getElementById('edit-book-shelf').value = book.shelf;
+                document.getElementById('edit-book-year').value = book.year;
+                document.getElementById('edit-book-image').value = book.image;
+                document.getElementById('edit-book-status').value = book.status;
+            } else {
+                alert("הספר לא נמצא.");
+                window.location.hash = '/books';
+            }
+        };
+        this.showLoading();
+        request.send();
+    }
+    
+    // פונקציה להוספה
+    async handleEditBook(event) {
+        event.preventDefault();
+        
+        const bookId = document.getElementById('edit-book-id').value;
+        const bookData = {
+            title: document.getElementById('edit-book-title').value,
+            author: document.getElementById('edit-book-author').value,
+            shelf: document.getElementById('edit-book-shelf').value,
+            year: document.getElementById('edit-book-year').value,
+            category: document.getElementById('edit-book-category').value,
+            image: document.getElementById('edit-book-image').value,
+            status: document.getElementById('edit-book-status').value
+        };
+    
+        await this.updateBook(bookId, bookData);
+    }
+    
 
     displayBooks(books) {    //just for display the books
         const booksList = document.getElementById('books-list');
@@ -303,7 +420,7 @@ class LibraryApp {
                 <td>${book.shelf}</td>
                 <td>${book.status}</td>
                 <td>
-                    <button class="edit-btn"> <i class="fa-regular fa-pen-to-square"></i></button>
+                    <button class="edit-btn" data-book-id="${book.id}"><i class="fa-regular fa-pen-to-square"></i></button>
                     <button class="delete-btn" data-book-id="${book.id}"><i class="fa-solid fa-trash"></i></button>
                 </td>
             </tr>

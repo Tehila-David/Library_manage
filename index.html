@@ -186,6 +186,43 @@
     </div>
   </template>
   
+  <template id="edit-book-template">
+    <div class="edit-book-container">
+      <h2>עריכת פרטי ספר</h2>
+      <form id="edit-book-form">
+        <input type="hidden" id="edit-book-id">
+        <input type="text" id="edit-book-title" placeholder="שם הספר" required>
+        <input type="text" id="edit-book-author" placeholder="שם המחבר" required>
+        <select id="edit-book-category" required>
+          <option value="">בחר קטגוריה</option>
+          <option value="היסטוריה">היסטוריה</option>
+          <option value="עיון">עיון</option>
+          <option value="מדע">מדע</option>
+          <option value="סיפורת">סיפורת</option>
+          <option value="מדע בדיוני">מדע בדיוני</option>
+        </select>
+        <select id="edit-book-shelf" required>
+          <option value="">בחר מיקום במדף</option>
+          <option value="A1">מדף A1</option>
+          <option value="A2">מדף A2</option>
+          <option value="B1">מדף B1</option>
+          <option value="B2">מדף B2</option>
+        </select>
+        <input type="number" id="edit-book-year" placeholder="שנת הוצאה" required>
+        <input type="text" id="edit-book-image" placeholder="URL לתמונה" required>
+        <select id="edit-book-status" required>
+          <option value="">בחר סטטוס</option>
+          <option value="available">זמין</option>
+          <option value="borrowed">מושאל</option>
+          <option value="late">באיחור</option>
+          <option value="unavailable">לא זמין</option>
+        </select>
+        <button type="submit" class="btn">עדכן ספר</button>
+        <button type="button" class="btn btn-cancel">ביטול</button>
+      </form>
+    </div>
+  </template>
+  
 
   <!-- סקריפטים (ניתן להתאימם) -->
   <script src="./Database/UsersDB.js" defer></script>
