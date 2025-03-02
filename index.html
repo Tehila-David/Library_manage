@@ -6,23 +6,41 @@
   <title>מערכת ניהול ספרייה</title>
   <link rel="stylesheet" href="./Client/CSS/styles.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
   <div id="app">
-      <div id="router-view"></div>
+    <div id="router-view"></div>
   </div>
   <div id="loading" style="display: none;" class="spinner"></div>
-
 
   <!-- Login Template -->
   <template id="login-template">
     <div class="login-container">
-      <h2>כניסה למערכת ניהול הספרייה</h2>
+      <div class="login-header">
+        <div class="logo-wrapper">
+          <i class="fas fa-book-open library-icon"></i>
+        </div>
+        <h2>כניסה למערכת ניהול הספרייה</h2>
+      </div>
       <form id="login-form">
-        <input type="text" id="username" placeholder="שם משתמש" required>
-        <input type="password" id="password" placeholder="סיסמה" required>
-        <button type="submit" class="btn">התחבר</button>
+        <div class="form-group">
+          <label for="username">שם משתמש</label>
+          <div class="input-with-icon">
+            <i class="fas fa-user"></i>
+            <input type="text" id="username" placeholder="הזן שם משתמש" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="password">סיסמה</label>
+          <div class="input-with-icon">
+            <i class="fas fa-lock"></i>
+            <input type="password" id="password" placeholder="הזן סיסמה" required>
+          </div>
+        </div>
+        <button type="submit" class="btn">
+          <i class="fas fa-sign-in-alt"></i> התחבר
+        </button>
       </form>
       <p class="register-link">משתמש חדש? <a href="#" id="register-link">הירשם כאן</a></p>
     </div>
@@ -31,17 +49,54 @@
   <!-- Register Template -->
   <template id="register-template">
     <div class="register-container">
-      <h2>הרשמת ספרן חדש</h2>
+      <div class="register-header">
+        <div class="logo-wrapper">
+          <i class="fas fa-book-open library-icon"></i>
+        </div>
+        <h2>הרשמת ספרן חדש</h2>
+      </div>
       <form id="register-form">
-        <input type="text" id="username" placeholder="שם משתמש" required>
-        <input type="text" id="id" placeholder="מספר זהות" required>
-        <input type="password" id="password" placeholder="סיסמה" required>
-        <input type="email" id="email" placeholder="דוא״ל" required>
-        <button type="submit" class="btn">הרשם</button>
+        <div class="form-row">
+          <div class="form-column">
+            <div class="form-group">
+              <label for="username">שם משתמש</label>
+              <div class="input-with-icon">
+                <i class="fas fa-user"></i>
+                <input type="text" id="username" placeholder="הזן שם משתמש" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="id">מספר זהות</label>
+              <div class="input-with-icon">
+                <i class="fas fa-id-card"></i>
+                <input type="text" id="id" placeholder="הזן מספר זהות" required>
+              </div>
+            </div>
+          </div>
+          <div class="form-column">
+            <div class="form-group">
+              <label for="password">סיסמה</label>
+              <div class="input-with-icon">
+                <i class="fas fa-lock"></i>
+                <input type="password" id="password" placeholder="הזן סיסמה" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="email">דוא״ל</label>
+              <div class="input-with-icon">
+                <i class="fas fa-envelope"></i>
+                <input type="email" id="email" placeholder="הזן כתובת דוא״ל" required>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button type="submit" class="btn">
+          <i class="fas fa-user-plus"></i> הרשם
+        </button>
       </form>
+      <p class="login-link">כבר יש לך חשבון? <a href="#" id="login-link">התחבר כאן</a></p>
     </div>
   </template>
-
 
   <!-- Books Template -->
   <template id="books-template">
@@ -50,15 +105,20 @@
       <div class="top-bar">
         <div class="top-bar-content">
           <div class="logo-container">
-            <!--<img src="/api/placeholder/40/40" alt="לוגו" class="logo-image">-->
+            <div class="logo-wrapper">
+              <i class="fas fa-university library-icon"></i>
+            </div>
             <h1>ניהול ספרייה</h1>
           </div>
           <div class="user-info">
-            <span>שלום, ספרן</span>
+            <div class="user-avatar">
+              <i class="fas fa-user-circle"></i>
+            </div>
+            <span id="user-greeting">שלום, <span id="username-display">ספרן</span></span>
             <nav class="top-nav">
-              <a href="#" id="books-link-2">ספרים</a>
-              <a href="#" id="my-actions-link-2">הפעולות שלי</a>
-              <button class="btn-logout"><i class="fas fa-sign-out-alt"></i></button>
+              <a href="#/books" id="books-link" class="nav-link active"><i class="fas fa-book"></i> ספרים</a>
+              <a href="#/my-actions" id="my-actions-link" class="nav-link"><i class="fas fa-history"></i> הפעולות שלי</a>
+              <button class="btn-logout" title="התנתק"><i class="fas fa-sign-out-alt"></i></button>
             </nav>
           </div>
         </div>
@@ -67,7 +127,7 @@
       <!-- Books Container -->
       <div class="books-container">
         <div class="books-header">
-          <h2>ניהול מלאי ספרים</h2>
+          <h2><i class="fas fa-book"></i> ניהול מלאי ספרים</h2>
           <button id="add-book-btn" class="btn">
             <i class="fas fa-plus"></i>
             הוסף ספר חדש
@@ -75,154 +135,336 @@
         </div>
 
         <div class="search-filters">
-          <input type="text" id="search-books" placeholder="חיפוש לפי שם ספר או מחבר">
-          <select class="filter-select">
-            <option value="">מיקום במדף</option>
-            <option value="A1">מדף A1</option>
-            <option value="A2">מדף A2</option>
-            <option value="B1">מדף B1</option>
-            <option value="B2">מדף B2</option>
-
-          </select>
-          <select class="filter-select">
-            <option value="">סטטוס</option>
-            <option value="available">זמין</option>
-            <option value="borrowed">מושאל</option>
-            <option value="late">באיחור</option>
-            <option value="unavailable">לא זמין</option>
-
-          </select>
-          <button class="btn" id="filter-btn">חפש</button>
+          <div class="search-input">
+            <input type="text" id="search-books" placeholder="חיפוש לפי שם ספר או מחבר">
+          </div>
+          <div class="filter-select">
+            <select id="shelf-filter" class="filter-select">
+              <option value="">מיקום במדף</option>
+              <option value="A1">מדף A1</option>
+              <option value="A2">מדף A2</option>
+              <option value="B1">מדף B1</option>
+              <option value="B2">מדף B2</option>
+            </select>
+          </div>
+          <div class="filter-select">
+            <select id="status-filter" class="filter-select">
+              <option value="">סטטוס</option>
+              <option value="available">זמין</option>
+              <option value="borrowed">מושאל</option>
+              <option value="late">באיחור</option>
+              <option value="unavailable">לא זמין</option>
+            </select>
+          </div>
+          <button class="btn" id="filter-btn">
+            <i class="fas fa-filter"></i> סנן
+          </button>
         </div>
 
-        <table class="books-table">
+        <div class="table-container">
+          <table class="books-table">
             <thead>
-                <tr>
-                  <th>תמונה</th>
-                  <th>שם הספר</th>
-                  <th>מחבר</th>
-                  <th>שנת הוצאה</th>
-                  <th>ISBN</th>
-                  <th>קטגוריה</th>
-                  <th>מיקום</th>
-                  <th>סטטוס</th>
-                  <th>פעולות</th>
-                </tr>
-              </thead>
-          <tbody id="books-list">
-            <!-- תוכן דינמי -->
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </template>
-
-  <!-- Librarian Actions Template -->
-  <template id="librarian-actions-template">
-    <div>
-      <!-- Top Bar זהה -->
-      <div class="top-bar">
-        <div class="top-bar-content">
-          <div class="logo-container">
-            <!--<img src="/api/placeholder/40/40" alt="לוגו" class="logo-image">-->
-            <h1>ניהול ספרייה</h1>
-          </div>
-          <div class="user-info">
-            <span>שלום, ספרן</span>
-            <nav class="top-nav">
-              <a href="#" id="books-link-2">ספרים</a>
-              <a href="#" id="my-actions-link-2">הפעולות שלי</a>
-              <button class="btn-logout"><i class="fas fa-sign-out-alt"></i></button>
-            </nav>
-          </div>
+              <tr>
+                <th>תמונה</th>
+                <th>שם הספר</th>
+                <th>מחבר</th>
+                <th>שנת הוצאה</th>
+                <th>ISBN</th>
+                <th>קטגוריה</th>
+                <th>מיקום</th>
+                <th>סטטוס</th>
+                <th>פעולות</th>
+              </tr>
+            </thead>
+            <tbody id="books-list">
+              <!-- תוכן דינמי יוכנס כאן -->
+            </tbody>
+          </table>
         </div>
       </div>
 
-      <!-- Librarian Actions Container -->
-      <div class="librarian-actions-page">
-        <h2>פעולות שביצעת</h2>
-        <ul id="actions-list">
-          <!-- פעולות דינמיות של הספרן יוצגו כאן -->
-        </ul>
+      <!-- Footer -->
+      <footer class="site-footer">
+        <div class="footer-container">
+          <div class="footer-section">
+            <h3>ספריית האוניברסיטה</h3>
+            <p>שעות פעילות:</p>
+            <p>ראשון-חמישי: 8:00-20:00</p>
+            <p>שישי: 8:00-14:00</p>
+          </div>
+          <div class="footer-section">
+            <h3>קישורים מהירים</h3>
+            <ul>
+              <li><a href="#/books">ניהול ספרים</a></li>
+              <li><a href="#/my-actions">הפעולות שלי</a></li>
+              <li><a href="https://library.example.edu/faq" target="_blank">שאלות נפוצות</a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <h3>צור קשר</h3>
+            <p><i class="fas fa-phone"></i> 03-1234567</p>
+            <p><i class="fas fa-envelope"></i> library@example.edu</p>
+            <p><i class="fas fa-map-marker-alt"></i> רחוב האוניברסיטה 1, תל אביב</p>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>© 2025 מערכת ניהול ספרייה. כל הזכויות שמורות.</p>
+        </div>
+      </footer>
+    </div>
+  </template>
+
+  <!-- My Actions Template -->
+  <template id="my-actions-template">
+    <div>
+      <!-- Top Bar will be inserted via JS -->
+      <div id="topbar-placeholder"></div>
+
+      <!-- My Actions Container -->
+      <div class="actions-container">
+        <div class="actions-header">
+          <h2><i class="fas fa-history"></i> היסטוריית פעולות</h2>
+          <div class="actions-filter">
+            <select id="action-type-filter">
+              <option value="">כל הפעולות</option>
+              <option value="add">הוספת ספר</option>
+              <option value="edit">עריכת ספר</option>
+              <option value="delete">מחיקת ספר</option>
+            </select>
+            <input type="date" id="date-from-filter" class="date-filter">
+            <span class="date-separator">עד</span>
+            <input type="date" id="date-to-filter" class="date-filter">
+            <button id="filter-actions-btn" class="btn btn-filter">
+              <i class="fas fa-filter"></i> סנן
+            </button>
+          </div>
+        </div>
+
+        <!-- Action Stats -->
+        <div class="action-stats">
+          <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-plus"></i></div>
+            <div class="stat-content">
+              <span id="added-count">0</span>
+              <p>ספרים שנוספו</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-edit"></i></div>
+            <div class="stat-content">
+              <span id="edited-count">0</span>
+              <p>עריכות שבוצעו</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-trash"></i></div>
+            <div class="stat-content">
+              <span id="deleted-count">0</span>
+              <p>ספרים שנמחקו</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action cards container -->
+        <div class="actions-list" id="actions-list">
+          <!-- Action cards will be inserted here dynamically -->
+          <div class="no-actions-message">אין פעולות קודמות להצגה</div>
+        </div>
+      </div>
+      
+      <!-- Footer will be inserted via JS -->
+      <div id="footer-placeholder"></div>
+    </div>
+  </template>
+
+  <!-- Action Card Template (for JS use) -->
+  <template id="action-card-template">
+    <div class="action-card">
+      <div class="action-icon">
+        <i class="fas fa-plus"></i>
+      </div>
+      <div class="action-details">
+        <div class="action-title">הוספת ספר: "שם הספר"</div>
+        <div class="action-meta">
+          <span class="action-date"><i class="far fa-calendar"></i> 01/01/2025</span>
+          <span class="action-time"><i class="far fa-clock"></i> 12:34</span>
+        </div>
+        <div class="action-desc">מספר מדף: A1, קטגוריה: היסטוריה</div>
       </div>
     </div>
   </template>
 
- <!-- Add Book Template (טופס הוספת ספר חדש) -->
- <template id="add-book-template">
-    <div class="add-book-container">
-      <h2>הוספת ספר חדש</h2>
-      <form id="add-book-form">
-        <input type="text" id="book-title" placeholder="שם הספר" required>
-        <input type="text" id="book-author" placeholder="שם המחבר" required>
-        <select id="book-category" required>
-          <option value="">בחר קטגוריה</option>
-          <option value="היסטוריה">היסטוריה</option>
-          <option value="עיון">עיון</option>
-          <option value="מדע">מדע</option>
-          <option value="סיפורת">סיפורת</option>
-          <option value="מדע בדיוני">מדע בדיוני</option>
-        </select>
-        <select id="book-shelf" required>
-          <option value="">בחר מיקום במדף</option>
-          <option value="A1">מדף A1</option>
-          <option value="A2">מדף A2</option>
-          <option value="B1">מדף B1</option>
-          <option value="B2">מדף B2</option>
-        </select>
-        <input type="number" id="book-year" placeholder="שנת הוצאה" required>
-        <input type="text" id="book-image" placeholder="URL לתמונה" required>
-            
-      <select id="book-status" required>
-        <option value="">בחר סטטוס</option>
-        <option value="available">זמין</option>
-        <option value="borrowed">מושאל</option>
-        <option value="late">באיחור</option>
-        <option value="unavailable">לא זמין</option>
-      </select>
+  <!-- Add Book Template -->
+  <template id="add-book-template">
+    <div>
+      <!-- Top Bar will be inserted via JS -->
+      <div id="topbar-placeholder"></div>
 
-        <button type="submit" class="btn">הוסף ספר</button>
-      </form>
+      <div class="add-book-container">
+        <h2><i class="fas fa-plus-circle"></i> הוספת ספר חדש</h2>
+        <form id="add-book-form">
+          <div class="form-group">
+            <label for="book-title">שם הספר</label>
+            <input type="text" id="book-title" placeholder="הזן את שם הספר" required>
+          </div>
+          <div class="form-group">
+            <label for="book-author">שם המחבר</label>
+            <input type="text" id="book-author" placeholder="הזן את שם המחבר" required>
+          </div>
+          <div class="form-group">
+            <label for="book-category">קטגוריה</label>
+            <select id="book-category" required>
+              <option value="">בחר קטגוריה</option>
+              <option value="היסטוריה">היסטוריה</option>
+              <option value="עיון">עיון</option>
+              <option value="מדע">מדע</option>
+              <option value="סיפורת">סיפורת</option>
+              <option value="מדע בדיוני">מדע בדיוני</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="book-shelf">מיקום במדף</label>
+            <select id="book-shelf" required>
+              <option value="">בחר מיקום במדף</option>
+              <option value="A1">מדף A1</option>
+              <option value="A2">מדף A2</option>
+              <option value="B1">מדף B1</option>
+              <option value="B2">מדף B2</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="book-year">שנת הוצאה</label>
+            <input type="number" id="book-year" placeholder="הזן את שנת ההוצאה" required>
+          </div>
+          <div class="form-group">
+            <label for="book-image">קישור לתמונה</label>
+            <input type="text" id="book-image" placeholder="הזן URL לתמונה של הספר" required>
+          </div>
+          <div class="form-group">
+            <label for="book-status">סטטוס</label>
+            <select id="book-status" required>
+              <option value="">בחר סטטוס</option>
+              <option value="available">זמין</option>
+              <option value="borrowed">מושאל</option>
+              <option value="late">באיחור</option>
+              <option value="unavailable">לא זמין</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-success">
+            <i class="fas fa-save"></i> הוסף ספר
+          </button>
+          <button type="button" class="btn btn-cancel" id="cancel-add-book">
+            <i class="fas fa-times"></i> ביטול
+          </button>
+        </form>
+      </div>
+
+      <!-- Footer will be inserted via JS -->
+      <div id="footer-placeholder"></div>
     </div>
   </template>
   
+  <!-- Edit Book Template -->
   <template id="edit-book-template">
-    <div class="edit-book-container">
-      <h2>עריכת פרטי ספר</h2>
-      <form id="edit-book-form">
-        <input type="hidden" id="edit-book-id">
-        <input type="text" id="edit-book-title" placeholder="שם הספר" required>
-        <input type="text" id="edit-book-author" placeholder="שם המחבר" required>
-        <select id="edit-book-category" required>
-          <option value="">בחר קטגוריה</option>
-          <option value="היסטוריה">היסטוריה</option>
-          <option value="עיון">עיון</option>
-          <option value="מדע">מדע</option>
-          <option value="סיפורת">סיפורת</option>
-          <option value="מדע בדיוני">מדע בדיוני</option>
-        </select>
-        <select id="edit-book-shelf" required>
-          <option value="">בחר מיקום במדף</option>
-          <option value="A1">מדף A1</option>
-          <option value="A2">מדף A2</option>
-          <option value="B1">מדף B1</option>
-          <option value="B2">מדף B2</option>
-        </select>
-        <input type="number" id="edit-book-year" placeholder="שנת הוצאה" required>
-        <input type="text" id="edit-book-image" placeholder="URL לתמונה" required>
-        <select id="edit-book-status" required>
-          <option value="">בחר סטטוס</option>
-          <option value="available">זמין</option>
-          <option value="borrowed">מושאל</option>
-          <option value="late">באיחור</option>
-          <option value="unavailable">לא זמין</option>
-        </select>
-        <button type="submit" class="btn">עדכן ספר</button>
-        <button type="button" class="btn btn-cancel">ביטול</button>
-      </form>
+    <div>
+      <!-- Top Bar will be inserted via JS -->
+      <div id="topbar-placeholder"></div>
+
+      <div class="edit-book-container">
+        <h2><i class="fas fa-edit"></i> עריכת פרטי ספר</h2>
+        <form id="edit-book-form">
+          <input type="hidden" id="edit-book-id">
+          <div class="form-group">
+            <label for="edit-book-title">שם הספר</label>
+            <input type="text" id="edit-book-title" placeholder="הזן את שם הספר" required>
+          </div>
+          <div class="form-group">
+            <label for="edit-book-author">שם המחבר</label>
+            <input type="text" id="edit-book-author" placeholder="הזן את שם המחבר" required>
+          </div>
+          <div class="form-group">
+            <label for="edit-book-category">קטגוריה</label>
+            <select id="edit-book-category" required>
+              <option value="">בחר קטגוריה</option>
+              <option value="היסטוריה">היסטוריה</option>
+              <option value="עיון">עיון</option>
+              <option value="מדע">מדע</option>
+              <option value="סיפורת">סיפורת</option>
+              <option value="מדע בדיוני">מדע בדיוני</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="edit-book-shelf">מיקום במדף</label>
+            <select id="edit-book-shelf" required>
+              <option value="">בחר מיקום במדף</option>
+              <option value="A1">מדף A1</option>
+              <option value="A2">מדף A2</option>
+              <option value="B1">מדף B1</option>
+              <option value="B2">מדף B2</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="edit-book-year">שנת הוצאה</label>
+            <input type="number" id="edit-book-year" placeholder="הזן את שנת ההוצאה" required>
+          </div>
+          <div class="form-group">
+            <label for="edit-book-image">קישור לתמונה</label>
+            <input type="text" id="edit-book-image" placeholder="הזן URL לתמונה של הספר" required>
+          </div>
+          <div class="form-group">
+            <label for="edit-book-status">סטטוס</label>
+            <select id="edit-book-status" required>
+              <option value="">בחר סטטוס</option>
+              <option value="available">זמין</option>
+              <option value="borrowed">מושאל</option>
+              <option value="late">באיחור</option>
+              <option value="unavailable">לא זמין</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-success">
+            <i class="fas fa-save"></i> עדכן ספר
+          </button>
+          <button type="button" class="btn btn-cancel">
+            <i class="fas fa-times"></i> ביטול
+          </button>
+        </form>
+      </div>
+
+      <!-- Footer will be inserted via JS -->
+      <div id="footer-placeholder"></div>
     </div>
   </template>
-  
+
+  <!-- Footer Template -->
+  <template id="footer-template">
+    <footer class="site-footer">
+      <div class="footer-container">
+        <div class="footer-section">
+          <h3>ספריית האוניברסיטה</h3>
+          <p>שעות פעילות:</p>
+          <p>ראשון-חמישי: 8:00-20:00</p>
+          <p>שישי: 8:00-14:00</p>
+        </div>
+        <div class="footer-section">
+          <h3>קישורים מהירים</h3>
+          <ul>
+            <li><a href="#/books">ניהול ספרים</a></li>
+            <li><a href="#/my-actions">הפעולות שלי</a></li>
+            <li><a href="#" target="_blank">שאלות נפוצות</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>צור קשר</h3>
+          <p><i class="fas fa-phone"></i> 03-1234567</p>
+          <p><i class="fas fa-envelope"></i> library@example.edu</p>
+          <p><i class="fas fa-map-marker-alt"></i> רחוב האוניברסיטה 1, תל אביב</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2025 מערכת ניהול ספרייה. כל הזכויות שמורות.</p>
+      </div>
+    </footer>
+  </template>
 
   <!-- סקריפטים (ניתן להתאימם) -->
   <script src="./Database/UsersDB.js" defer></script>
