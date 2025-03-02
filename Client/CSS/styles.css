@@ -464,6 +464,7 @@ label {
   background-color: white;
 }
 
+
 table {
   width: 100%;
   border-collapse: collapse;
@@ -485,6 +486,7 @@ table td {
   padding: 14px 16px;
   border-bottom: 1px solid var(--border-color);
   transition: background-color 0.2s;
+
 }
 
 table tr:last-child td {
@@ -501,6 +503,54 @@ table img {
   object-fit: cover;
   border-radius: 4px;
   box-shadow: var(--shadow-small);
+}
+.books-table th {
+  text-align: center !important;
+  padding: 14px 10px;
+  background-color: var(--primary-color);
+  color: white;
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+/* מרכוז תאי הטבלה */
+.books-table td {
+  text-align: center !important;
+  padding: 14px 10px;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--border-color);
+  transition: background-color 0.2s;
+}
+
+/* עיצוב התמונות בטבלה */
+.books-table td img {
+  width: 50px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 4px;
+  box-shadow: var(--shadow-small);
+  margin: 0 auto;
+  display: block;
+}
+
+/* שורות מרחפות (hover) */
+.books-table tr:hover td {
+  background-color: var(--primary-light);
+}
+
+/* כפתורי פעולה */
+.action-buttons {
+  display: flex;
+  gap: 50px;
+  justify-content: center;
+}
+
+/* דגש על חשיבות מרכוז הטקסט (יעקוף כל הגדרה אחרת) */
+.books-table th, 
+.books-table td {
+  text-align: center !important;
 }
 
 /* Action Buttons in Tables */

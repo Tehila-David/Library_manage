@@ -101,6 +101,9 @@ class LibraryApp {
     renderBooksPage() {
         const template = document.getElementById('books-template');
         if (template) {
+
+         
+
             document.getElementById('router-view').innerHTML = template.innerHTML;
             this.loadBooks();  // Load the books when rendering the books page
     
@@ -152,31 +155,36 @@ class LibraryApp {
                     window.location.hash = `/edit-book/${bookId}`;
                 }
             });
+
+            this.setupTopBarListeners();
             
-            // לינק לספרים
-            document.getElementById('books-link')?.addEventListener('click', (e) => {
-                e.preventDefault();
-                window.location.hash = '/books';
-            });
+        //     // לינק לספרים
+        //     document.getElementById('books-link')?.addEventListener('click', (e) => {
+        //         e.preventDefault();
+        //         window.location.hash = '/books';
+        //     });
             
-            // לינק לפעולות שלי
-            document.getElementById('my-actions-link')?.addEventListener('click', (e) => {
-                e.preventDefault();
-                window.location.hash = '/my-actions';
-            });
+        //     // לינק לפעולות שלי
+        //     document.getElementById('my-actions-link')?.addEventListener('click', (e) => {
+        //         e.preventDefault();
+        //         window.location.hash = '/my-actions';
+        //     });
             
-            // כפתור התנתקות
-            document.querySelector('.btn-logout')?.addEventListener('click', () => {
-                // רישום פעולת התנתקות
-                if (this.currentUser) {
-                    this.recordAction('logout', `התנתקות מהמערכת`, null,
-                        `משתמש ${this.currentUser.userName} התנתק מהמערכת`);
-                }
-                this.currentUser = null;
-                window.location.hash = '/login';
-            });
+        //     // כפתור התנתקות
+        //     document.querySelector('.btn-logout')?.addEventListener('click', () => {
+        //         // רישום פעולת התנתקות
+        //         if (this.currentUser) {
+        //             this.recordAction('logout', `התנתקות מהמערכת`, null,
+        //                 `משתמש ${this.currentUser.userName} התנתק מהמערכת`);
+        //         }
+        //         this.currentUser = null;
+        //         window.location.hash = '/login';
+        //     });
+        //    // פונקציה להגדרת האזנה לאירועים בסרגל העליון
+   
         }
     }
+
 
     // Function to render the add-book page
     renderAddBookPage() {
@@ -187,6 +195,27 @@ class LibraryApp {
         }
     }
 
+
+    renderEditBookPage(params) {
+        
+        const bookId = params.id;
+        console.log(`עריכת ספר עם מזהה: ${bookId}`);
+        const template = document.getElementById('edit-book-template');
+        if (template) {
+            document.getElementById('router-view').innerHTML = template.innerHTML;
+
+            // טעינת פרטי הספר הקיים ומילוי הטופס
+            this.loadBookForEdit(bookId);
+
+            // הוספת מאזיני אירועים
+            document.getElementById('edit-book-form')?.addEventListener('submit', (e) => this.handleEditBook(e));
+            document.querySelector('.btn-cancel')?.addEventListener('click', () => {
+                window.location.hash = '/books'; // חזרה לדף הספרים
+            });
+        }
+    }
+
+    
     // פונקציה להצגת עמוד הפעולות שלי
     renderMyActionsPage() {
         const template = document.getElementById('my-actions-template');
@@ -217,9 +246,50 @@ class LibraryApp {
             this.setupActionFilters();
 
             // טעינת היסטוריית פעולות
-            this.loadActionsHistory();
+            //this.loadActionsHistory();
         }
     }
+
+    setupTopBarListeners() {
+        // לינק לספרים
+        document.getElementById('books-link')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.location.hash = '/books';
+        });
+
+        // לינק לפעולות שלי
+        document.getElementById('my-actions-link')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.location.hash = '/my-actions';
+        });
+
+        // כפתור התנתקות
+        document.querySelector('.btn-logout')?.addEventListener('click', () => {
+            // רישום פעולת התנתקות
+            // if (this.currentUser) {
+            //     this.recordAction('logout', `התנתקות מהמערכת`, null,
+            //         `משתמש ${this.currentUser.userName} התנתק מהמערכת`);
+            // }
+
+            this.currentUser = null;
+            window.location.hash = '/login';
+        });
+
+        // הגדרת לינק פעיל
+        // const currentPath = window.location.hash.slice(1);
+        // document.querySelectorAll('.nav-link').forEach(link => {
+        //     link.classList.remove('active');
+        // });
+
+        // if (currentPath === '/books') {
+        //     document.getElementById('books-link')?.classList.add('active');
+        // } else if (currentPath === '/my-actions') {
+        //     document.getElementById('my-actions-link')?.classList.add('active');
+        // }
+    }
+
+
+    
 
     // Function to handle login logic
     async handleLogin(event) {
@@ -271,25 +341,8 @@ class LibraryApp {
         request.send(newUser);
     }
 
-    filterBooks() {
-        const searchTerm = document.querySelector("#search-books")?.value.trim().toLowerCase() || "";
-        const shelfFilter = document.querySelectorAll(".filter-select")[0].value; // shelf
-        const statusFilter = document.querySelectorAll(".filter-select")[1].value; // status
-        console.log(shelfFilter);
-        console.log(statusFilter);
+ 
 
-        const filteredBooks = this.books.filter(book => {
-            console.log(book.shelf);
-            const matchesSearch = searchTerm === "" || book.title.toLowerCase().includes(searchTerm) || book.author.toLowerCase().includes(searchTerm);
-            const matchesShelf = shelfFilter === "" || book.shelf === shelfFilter;
-            const matchesStatus = statusFilter === "" || book.status === statusFilter;
-
-            return matchesSearch && matchesShelf && matchesStatus;
-        });
-
-        this.displayBooks(filteredBooks);
-    }
-    
     filterBooks() {
         const searchTerm = document.querySelector("#search-books")?.value.trim().toLowerCase() || "";
         // תיקון: חסר # לפני מזהי האלמנטים וצריך להשתמש ב-querySelector במקום querySelectorAll
@@ -422,38 +475,19 @@ class LibraryApp {
         this.showLoading();
         request.send();
     }
-    renderEditBookPage(params) {
-        const bookId = params.id;
-        console.log(`עריכת ספר עם מזהה: ${bookId}`);
-        const template = document.getElementById('edit-book-template');
-        if (template) {
-            document.getElementById('router-view').innerHTML = template.innerHTML;
 
-            // מציאת מזהה הספר מהכתובת
-            const url = window.location.hash;
-            const bookId = url.split('/').pop();
-
-            // טעינת פרטי הספר הקיים ומילוי הטופס
-            this.loadBookForEdit(bookId);
-
-            // הוספת מאזיני אירועים
-            document.getElementById('edit-book-form')?.addEventListener('submit', (e) => this.handleEditBook(e));
-            document.querySelector('.btn-cancel')?.addEventListener('click', () => {
-                window.location.hash = '/books'; // חזרה לדף הספרים
-            });
-        }
-    }
+    
 
     // פונקציה להוספה
     async loadBookForEdit(bookId) {
         const request = new FXMLHttpRequest();
-        request.open("GET", `/books/${bookId}`, "BooksServer");
+        request.open("GET", `/edit-book/${bookId}`, "BooksServer");
         request.onerror = (error) => {
             this.hideLoading();
             setTimeout(() => {
                 alert(`שגיאה בטעינת פרטי הספר: ${error.error}`);
                 window.location.hash = '/books';
-            }, 30);
+            }, 10000);
         };
         request.onload = (book) => {
             this.hideLoading();
@@ -581,45 +615,7 @@ class LibraryApp {
         }, 3000);
     }
 
-    // פונקציה להגדרת האזנה לאירועים בסרגל העליון
-    setupTopBarListeners() {
-        // לינק לספרים
-        document.getElementById('books-link')?.addEventListener('click', (e) => {
-            e.preventDefault();
-            window.location.hash = '/books';
-        });
-
-        // לינק לפעולות שלי
-        document.getElementById('my-actions-link')?.addEventListener('click', (e) => {
-            e.preventDefault();
-            window.location.hash = '/my-actions';
-        });
-
-        // כפתור התנתקות
-        document.querySelector('.btn-logout')?.addEventListener('click', () => {
-            // רישום פעולת התנתקות
-            if (this.currentUser) {
-                this.recordAction('logout', `התנתקות מהמערכת`, null,
-                    `משתמש ${this.currentUser.userName} התנתק מהמערכת`);
-            }
-
-            this.currentUser = null;
-            window.location.hash = '/login';
-        });
-
-        // הגדרת לינק פעיל
-        const currentPath = window.location.hash.slice(1);
-        document.querySelectorAll('.nav-link').forEach(link => {
-            link.classList.remove('active');
-        });
-
-        if (currentPath === '/books') {
-            document.getElementById('books-link')?.classList.add('active');
-        } else if (currentPath === '/my-actions') {
-            document.getElementById('my-actions-link')?.classList.add('active');
-        }
-    }
-
+    
     // פונקציה להצגת עמוד הפעולות שלי
     renderMyActionsPage() {
         const template = document.getElementById('my-actions-template');
