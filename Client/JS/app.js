@@ -101,35 +101,49 @@ class LibraryApp {
     renderBooksPage() {
         const template = document.getElementById('books-template');
         if (template) {
-
             document.getElementById('router-view').innerHTML = template.innerHTML;
             this.loadBooks();  // Load the books when rendering the books page
-
-            document.getElementById('search-books').addEventListener('input', () => {
-                this.filterBooks();
-            });
-
-            document.querySelectorAll(".filter-select").forEach(select => {
-                select.addEventListener("change", () => {
-                    this.filterBooks(); // filter by combo box
-                });
-            });
-
+    
+            // הסרנו את האזנות האירועים האלה כדי שהסינון יתבצע רק עם כפתור הסינון
+            // document.getElementById('search-books').addEventListener('input', () => {
+            //     this.filterBooks();
+            // });
+    
+            // document.querySelectorAll(".filter-select").forEach(select => {
+            //     select.addEventListener("change", () => {
+            //         this.filterBooks(); // filter by combo box
+            //     });
+            // });
+    
+            // רק לחיצה על כפתור הסינון תפעיל את פעולת הסינון
             document.getElementById('filter-btn').addEventListener("click", () => {
                 this.filterBooks();
             });
-
+    
+            // תמיכה בלחיצה על Enter בשדה החיפוש
+            document.getElementById('search-books').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    this.filterBooks();
+                }
+            });
+    
             document.getElementById('add-book-btn')?.addEventListener('click', () => {
                 window.location.hash = '/add-book'; // Navigate to the add-book page
             });
-
+    
             document.addEventListener('click', (e) => {
                 if (e.target.matches('.delete-btn')) {
                     e.preventDefault();
                     const bookId = e.target.getAttribute('data-book-id');
-                    this.deleteBook(bookId);
+                    
+                    // הוספת אישור לפני מחיקה
+                    if (confirm('האם אתה בטוח שברצונך למחוק ספר זה?')) {
+                        this.deleteBook(bookId);
+                    }
                 }
             });
+            
             document.addEventListener('click', (e) => {
                 if (e.target.matches('.edit-btn')) {
                     e.preventDefault();
@@ -138,18 +152,19 @@ class LibraryApp {
                     window.location.hash = `/edit-book/${bookId}`;
                 }
             });
+            
             // לינק לספרים
             document.getElementById('books-link')?.addEventListener('click', (e) => {
                 e.preventDefault();
                 window.location.hash = '/books';
             });
-
+            
             // לינק לפעולות שלי
             document.getElementById('my-actions-link')?.addEventListener('click', (e) => {
                 e.preventDefault();
                 window.location.hash = '/my-actions';
             });
-
+            
             // כפתור התנתקות
             document.querySelector('.btn-logout')?.addEventListener('click', () => {
                 // רישום פעולת התנתקות
@@ -272,6 +287,28 @@ class LibraryApp {
             return matchesSearch && matchesShelf && matchesStatus;
         });
 
+        this.displayBooks(filteredBooks);
+    }
+    
+    filterBooks() {
+        const searchTerm = document.querySelector("#search-books")?.value.trim().toLowerCase() || "";
+        // תיקון: חסר # לפני מזהי האלמנטים וצריך להשתמש ב-querySelector במקום querySelectorAll
+        const shelfFilter = document.querySelector("#shelf-filter")?.value || ""; // מיקום במדף
+        const statusFilter = document.querySelector("#status-filter")?.value || ""; // סטטוס
+        
+        console.log("shelfFilter: " + shelfFilter);
+        console.log("statusFilter: " + statusFilter);
+        
+        const filteredBooks = this.books.filter(book => {
+            const matchesSearch = searchTerm === "" || 
+                                 book.title.toLowerCase().includes(searchTerm) || 
+                                 book.author.toLowerCase().includes(searchTerm);
+            const matchesShelf = shelfFilter === "" || book.shelf === shelfFilter;
+            const matchesStatus = statusFilter === "" || book.status === statusFilter;
+            
+            return matchesSearch && matchesShelf && matchesStatus;
+        });
+        
         this.displayBooks(filteredBooks);
     }
 

@@ -150,10 +150,10 @@
           <div class="filter-select">
             <select id="status-filter" class="filter-select">
               <option value="">סטטוס</option>
-              <option value="available">זמין</option>
-              <option value="borrowed">מושאל</option>
-              <option value="late">באיחור</option>
-              <option value="unavailable">לא זמין</option>
+              <option value="זמין">זמין</option>
+              <option value="מושאל">מושאל</option>
+              <option value="מאוחר">באיחור</option>
+              <option value="לא זמין">לא זמין</option>
             </select>
           </div>
           <button class="btn" id="filter-btn">
@@ -340,14 +340,14 @@
             <label for="book-image">קישור לתמונה</label>
             <input type="text" id="book-image" placeholder="הזן URL לתמונה של הספר" required>
           </div>
-          <div class="form-group">
-            <label for="book-status">סטטוס</label>
+          <div class="filter-select">
+            <label for="book-status">סטטוס הספר</label>
             <select id="book-status" required>
-              <option value="">בחר סטטוס</option>
-              <option value="available">זמין</option>
-              <option value="borrowed">מושאל</option>
-              <option value="late">באיחור</option>
-              <option value="unavailable">לא זמין</option>
+              <option value="">סטטוס</option>
+              <option value="זמין">זמין</option>
+              <option value="מושאל">מושאל</option>
+              <option value="מאוחר">באיחור</option>
+              <option value="לא זמין">לא זמין</option>
             </select>
           </div>
           <button type="submit" class="btn btn-success">
@@ -414,11 +414,12 @@
           <div class="form-group">
             <label for="edit-book-status">סטטוס</label>
             <select id="edit-book-status" required>
-              <option value="">בחר סטטוס</option>
-              <option value="available">זמין</option>
-              <option value="borrowed">מושאל</option>
-              <option value="late">באיחור</option>
-              <option value="unavailable">לא זמין</option>
+                <option value="">סטטוס</option>
+                <option value="זמין">זמין</option>
+                <option value="מושאל">מושאל</option>
+                <option value="מאוחר">באיחור</option>
+                <option value="לא זמין">לא זמין</option>
+              </select>
             </select>
           </div>
           <button type="submit" class="btn btn-success">
