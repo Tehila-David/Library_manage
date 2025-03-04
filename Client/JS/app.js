@@ -101,7 +101,7 @@ class LibraryApp {
         const template = document.getElementById('books-template');
 
         this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
-        console.log("this.currentUser 2: " + this.currentUser.userName);
+        console.log("this.currentUser: " + this.currentUser.userName);
 
         if (template) {
 
@@ -125,8 +125,9 @@ class LibraryApp {
             document.getElementById('filter-btn').addEventListener("click", () => {
                 this.filterBooks();
             });
-           
-
+            if (this.currentUser && this.currentUser.userName) {
+                document.getElementById('username-display').textContent = this.currentUser.userName;
+            }
 
             document.getElementById('add-book-btn')?.addEventListener('click', () => {
                 window.location.hash = '/add-book'; // Navigate to the add-book page
@@ -166,7 +167,10 @@ class LibraryApp {
             document.getElementById('add-book-form')?.addEventListener('submit', (e) => {
                 this.handleAddBook(e);
                 window.location.hash = '/books';
-        });
+            });
+            document.querySelector('.btn-cancel')?.addEventListener('click', () => {
+                window.location.hash = '/books'; // חזרה לדף הספרים
+            });
         }
     }
 
@@ -201,22 +205,42 @@ class LibraryApp {
         if (template) {
             document.getElementById('router-view').innerHTML = template.innerHTML;
 
-            // הוספת סרגל עליון
-            const topBarTemplate = document.querySelector('#books-template .top-bar').outerHTML;
-            document.getElementById('topbar-placeholder').innerHTML = topBarTemplate;
+            // שימוש בתוכן התבנית ישירות
+            const booksTemplateContent = document.getElementById('books-template').content;
+            const topBarNode = booksTemplateContent.querySelector('.top-bar').cloneNode(true);
+
+            // החלפת אלמנט הפלייסהולדר בסרגל העליון
+            const topBarPlaceholder = document.getElementById('topbar-placeholder');
+            if (topBarPlaceholder) {
+                topBarPlaceholder.parentNode.replaceChild(topBarNode, topBarPlaceholder);
+
+                // מציאת הלינקים בסרגל שהוספנו ועדכון הפעיל
+                const links = document.querySelectorAll('.nav-link');
+                links.forEach(link => {
+                    link.classList.remove('active');
+                });
+                document.getElementById('my-actions-link')?.classList.add('active');
+
+                // עדכון שם המשתמש אם זמין
+                if (this.currentUser && this.currentUser.userName) {
+                    document.getElementById('username-display').textContent = this.currentUser.userName;
+                }
+            }
 
             // הוספת פוטר
-            const footerTemplate = document.getElementById('footer-template').innerHTML;
-            document.getElementById('footer-placeholder').innerHTML = footerTemplate;
+            const footerTemplate = document.getElementById('footer-template');
+            if (footerTemplate) {
+                document.getElementById('footer-placeholder').innerHTML = footerTemplate.innerHTML;
+            }
 
             // הגדרת האזנה לאירועים בסרגל העליון
             this.setupTopBarListeners();
 
             // הגדרת פילטרים של פעולות
             this.setupActionFilters();
-
+            this.currentUser = JSON.parse(localStorage.getItem('currentUser')); 
             // טעינת היסטוריית פעולות
-            this.loadActionsHistory();
+            this.displayActions(this.currentUser.actionsHistory);
         }
     }
 
@@ -306,17 +330,18 @@ class LibraryApp {
         // הוסף את הפעולה למערך של המשתמש
         this.currentUser.actionsHistory.push(action);
         localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
-        console.log("this.currentUser.actionsHistory " + this.currentUser.actionsHistory[0].type);
-        user = this.currentUser;
+
+
         // שמור את המשתמש המעודכן בשרת באמצעות PUT
         const request = new FXMLHttpRequest();
         request.open("PUT", `/users/${this.currentUser.userName}`);
-        console.log(`/users/${this.currentUser.userName}`);
-        request.onerror = (error) => {
-            this.hideLoading();
-            console.error("Error adding action to user history:", error);
-            return null;
-        };
+
+        // request.onerror = (error) => {
+        //     this.hideLoading();
+        //     console.error("Error adding action to user history:", error);
+        //     return null;
+        // };
+
         request.onload = (updatedUser) => {
             this.hideLoading();
             console.log("Action added successfully to user history");
@@ -329,12 +354,12 @@ class LibraryApp {
 
     filterBooksBySearch() {
         const searchTerm = document.querySelector("#search-books")?.value.trim().toLowerCase() || "";
-       
+
         const filteredBooks = this.books.filter(book => {
             const matchesSearch = searchTerm === "" ||
                 book.title.toLowerCase().includes(searchTerm) ||
                 book.author.toLowerCase().includes(searchTerm);
-           
+
             return matchesSearch;
         });
 
@@ -434,10 +459,11 @@ class LibraryApp {
             const actionId = this.getNextActionId(); // פונקציה שמחזירה ID רץ
             const newAction = {
                 id: actionId,
-                type: 'add',
-                title: `הוספת ספר: "${bookData.title}"`,
+                type: 'ADD',
+                bookId: book.id,
+                title: `הוספת ספר: "${book.title}"`,
                 timestamp: new Date(),
-                details: `מספר מדף: ${bookData.shelf}, קטגוריה: ${bookData.category}`
+                author: book.author
             };
 
             // הוספת הפעולה למערך הפעולות של המשתמש
@@ -468,9 +494,24 @@ class LibraryApp {
             setTimeout(() => {  //the timeout is in order to the code will can be hide the loading before alert
                 alert(error.error || "There was an error updating the book.");
             }, 30);
-        }; 
+        };
         request.onload = (book) => {
             this.hideLoading();
+            
+            // יצירת פעולה חדשה לעדכון ספר
+            const actionId = this.getNextActionId(); // פונקציה שמחזירה ID רץ
+            const newAction = {
+                id: actionId,
+                type: 'PUT',
+                bookId: book.id,
+                title: `עדכון ספר: "${book.title}"`,
+                timestamp: new Date(),
+                author: book.author
+            };
+            
+            // הוספת הפעולה למערך הפעולות של המשתמש
+            this.AddAction(newAction);
+            
             setTimeout(() => {  //the timeout is in order to the code will can be hide the loading before alert
                 alert("The book has been successfully updated!");
                 window.location.hash = '/books';
@@ -482,6 +523,16 @@ class LibraryApp {
 
     async deleteBook(bookId) {
         console.log(bookId);
+        
+        // נשיג את פרטי הספר לפני המחיקה כדי שנוכל לשמור אותם בפעולה
+        let bookDetails = null;
+        try {
+            // ניסיון לקבל את פרטי הספר לפני המחיקה
+            bookDetails = await this.getBookById(bookId);
+        } catch (error) {
+            console.error("Error fetching book details before deletion:", error);
+        }
+        
         const request = new FXMLHttpRequest();
         request.open("DELETE", `/books/${bookId}`, "BooksServer"); // With ID for deleting
         request.onerror = (error) => {
@@ -492,6 +543,23 @@ class LibraryApp {
         };
         request.onload = () => {
             this.hideLoading();
+            
+            // יצירת פעולה חדשה למחיקת ספר
+            if (bookDetails) {
+                const actionId = this.getNextActionId(); // פונקציה שמחזירה ID רץ
+                const newAction = {
+                    id: actionId,
+                    type: 'DELETE',
+                    bookId: bookId,
+                    title: `מחיקת ספר: "${bookDetails.title}"`,
+                    timestamp: new Date(),
+                    author: bookDetails.author
+                };
+                
+                // הוספת הפעולה למערך הפעולות של המשתמש
+                this.AddAction(newAction);
+            }
+            
             setTimeout(() => {  //the timeout is in order to the code will can be hide the loading before alert
                 alert("The book has been successfully deleted!");
                 this.loadBooks(); // Refresh the book list
@@ -500,9 +568,24 @@ class LibraryApp {
         this.showLoading();
         request.send();
     }
+    
+    // הוספת פונקציה להשגת פרטי ספר לפי ID
+    async getBookById(bookId) {
+        return new Promise((resolve, reject) => {
+            const request = new FXMLHttpRequest();
+            request.open("GET", `/books/${bookId}`, "BooksServer");
+            request.onerror = (error) => {
+                reject(error);
+            };
+            request.onload = (book) => {
+                resolve(book);
+            };
+            request.send();
+        });
+    }
 
 
-    // פונקציה להוספה
+
     async loadBookForEdit(bookId) {
         const request = new FXMLHttpRequest();
         request.open("GET", `/edit-book/${bookId}`, "BooksServer");
@@ -534,7 +617,7 @@ class LibraryApp {
         request.send();
     }
 
-    // פונקציה להוספה
+
     async handleEditBook(event) {
         event.preventDefault();
 
@@ -640,50 +723,6 @@ class LibraryApp {
     }
 
 
-    // פונקציה להצגת עמוד הפעולות שלי
-    renderMyActionsPage() {
-        const template = document.getElementById('my-actions-template');
-        if (template) {
-            document.getElementById('router-view').innerHTML = template.innerHTML;
-
-            // שימוש בתוכן התבנית ישירות
-            const booksTemplateContent = document.getElementById('books-template').content;
-            const topBarNode = booksTemplateContent.querySelector('.top-bar').cloneNode(true);
-
-            // החלפת אלמנט הפלייסהולדר בסרגל העליון
-            const topBarPlaceholder = document.getElementById('topbar-placeholder');
-            if (topBarPlaceholder) {
-                topBarPlaceholder.parentNode.replaceChild(topBarNode, topBarPlaceholder);
-
-                // מציאת הלינקים בסרגל שהוספנו ועדכון הפעיל
-                const links = document.querySelectorAll('.nav-link');
-                links.forEach(link => {
-                    link.classList.remove('active');
-                });
-                document.getElementById('my-actions-link')?.classList.add('active');
-
-                // עדכון שם המשתמש אם זמין
-                if (this.currentUser && this.currentUser.userName) {
-                    document.getElementById('username-display').textContent = this.currentUser.userName;
-                }
-            }
-
-            // הוספת פוטר
-            const footerTemplate = document.getElementById('footer-template');
-            if (footerTemplate) {
-                document.getElementById('footer-placeholder').innerHTML = footerTemplate.innerHTML;
-            }
-
-            // הגדרת האזנה לאירועים בסרגל העליון
-            this.setupTopBarListeners();
-
-            // הגדרת פילטרים של פעולות
-            this.setupActionFilters();
-
-            // טעינת היסטוריית פעולות
-            this.displayActions(this.actionsHistory);
-        }
-    }
 
     // פונקציה להגדרת פילטרים של פעולות
     setupActionFilters() {
@@ -760,84 +799,103 @@ class LibraryApp {
     }
 
     // פונקציה להצגת פעולות
-    displayActions(actions) {
-        const actionsList = document.getElementById('actions-list');
-
-        // ניקוי הרשימה - אנחנו צריכים להסיר את כל התוכן, כולל ההודעה "אין פעולות"
-        actionsList.innerHTML = '';
-
-        // בדיקה אם ההיסטוריה ריקה
-        if (!actions || actions.length === 0) {
-            // הצג את הודעת "אין פעולות" שהיא כבר חלק מהתבנית
-            actionsList.innerHTML = `
+    d// פונקציה להצגת פעולות
+displayActions(actions) {
+    const actionsList = document.getElementById('actions-list');
+    
+    // פונקציה פנימית לעיצוב התאריך והשעה
+    const formatDate = (timestamp) => {
+        const date = new Date(timestamp);
+        
+        // פורמט תאריך: DD/MM/YYYY
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear();
+        const dateStr = `${day}/${month}/${year}`;
+        
+        // פורמט שעה: HH:MM
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        const timeStr = `${hours}:${minutes}`;
+        
+        return {
+            date: dateStr,
+            time: timeStr
+        };
+    };
+    
+    // ניקוי הרשימה
+    actionsList.innerHTML = '';
+    
+    // בדיקה אם ההיסטוריה ריקה
+    if (!actions || actions.length === 0) {
+        actionsList.innerHTML = `
         <div class="no-actions-message">
             <i class="fas fa-history" style="font-size: 24px; margin-bottom: 10px;"></i>
             <p>אין פעולות קודמות להצגה</p>
         </div>`;
-            return;
-        }
-
-        // קבלת תבנית כרטיס פעולה
-        const actionCardTemplate = document.getElementById('action-card-template').content;
-
-        // יצירת פרגמנט לשיפור ביצועים
-        const fragment = document.createDocumentFragment();
-
-        // הוספת כל פעולה לרשימה
-        actions.forEach((action, index) => {
-            // שכפול התבנית
-            const actionCard = actionCardTemplate.cloneNode(true);
-
-            // הגדרת מאפיין סוג פעולה לעיצוב
-            actionCard.querySelector('.action-card').setAttribute('data-type', action.type);
-
-            // הגדרת אייקון הפעולה
-            const iconElement = actionCard.querySelector('.action-icon i');
-            if (action.type === 'add') {
-                iconElement.className = 'fas fa-plus';
-            } else if (action.type === 'edit') {
-                iconElement.className = 'fas fa-edit';
-            } else if (action.type === 'delete') {
-                iconElement.className = 'fas fa-trash';
-            } else if (action.type === 'login') {
-                iconElement.className = 'fas fa-sign-in-alt';
-            } else if (action.type === 'register') {
-                iconElement.className = 'fas fa-user-plus';
-            } else if (action.type === 'logout') {
-                iconElement.className = 'fas fa-sign-out-alt';
-            }
-
-            // הגדרת כותרת הפעולה
-            actionCard.querySelector('.action-title').textContent = action.title;
-
-            // עיצוב התאריך
-            const formattedDate = this.formatDate(action.timestamp);
-            actionCard.querySelector('.action-date').innerHTML =
-                `<i class="far fa-calendar"></i> ${formattedDate.date}`;
-
-            // עיצוב השעה
-            actionCard.querySelector('.action-time').innerHTML =
-                `<i class="far fa-clock"></i> ${formattedDate.time}`;
-
-            // הגדרת התיאור
-            actionCard.querySelector('.action-desc').textContent = action.details;
-
-            // הוספת השהייה ליצירת אפקט הנפשה מדורג
-            // אנחנו משתמשים בסגנון ישיר כאן כי אין לנו מחלקות CSS מוכנות להשהיות
-            const delay = index * 0.1;
-            const actionCardElement = actionCard.querySelector('.action-card');
-            actionCardElement.style.animationDelay = `${delay}s`;
-            actionCardElement.classList.add('fade-in');
-
-            // הוספת כרטיס הפעולה לפרגמנט
-            fragment.appendChild(actionCard);
-        });
-
-        // הוספת הפרגמנט לדום
-        actionsList.appendChild(fragment);
+        return;
     }
-
-
+    
+    // קבלת תבנית כרטיס פעולה
+    const actionCardTemplate = document.getElementById('action-card-template').content;
+    
+    // יצירת פרגמנט לשיפור ביצועים
+    const fragment = document.createDocumentFragment();
+    
+    // הוספת כל פעולה לרשימה
+    actions.forEach((action, index) => {
+        // שכפול התבנית
+        const actionCard = actionCardTemplate.cloneNode(true);
+        
+        // הגדרת מאפיין סוג פעולה לעיצוב
+        const actionCardElement = actionCard.querySelector('.action-card');
+        actionCardElement.setAttribute('data-type', action.type);
+        actionCardElement.setAttribute('data-id', action.id);
+        
+        // הגדרת אייקון הפעולה
+        const iconElement = actionCard.querySelector('.action-icon i');
+        if (action.type === 'POST') {
+            iconElement.className = 'fas fa-plus';
+        } else if (action.type === 'PUT') {
+            iconElement.className = 'fas fa-edit';
+        } else if (action.type === 'DELETE') {
+            iconElement.className = 'fas fa-trash';
+        }
+        
+        // הגדרת כותרת הפעולה
+        actionCard.querySelector('.action-title').textContent = action.title;
+        
+        // עיצוב התאריך והשעה
+        const formattedDate = formatDate(action.timestamp);
+        actionCard.querySelector('.action-date').innerHTML =
+            `<i class="far fa-calendar"></i> ${formattedDate.date}`;
+        actionCard.querySelector('.action-time').innerHTML =
+            `<i class="far fa-clock"></i> ${formattedDate.time}`;
+        
+    
+        // הוספת שם המחבר
+        const authorElement = actionCard.querySelector('.action-author');
+        if (authorElement && action.author) {
+            authorElement.innerHTML = `<i class="fas fa-user-edit"></i> ${action.author}`;
+        } else if (authorElement) {
+            authorElement.style.display = 'none'; // הסתר אם אין מחבר
+        }
+        
+        // הוספת השהייה ליצירת אפקט הנפשה מדורג
+        actionCardElement.style.animationDelay = `${index * 0.1}s`;
+        actionCardElement.classList.add('fade-in');
+        
+        // הוספת כרטיס הפעולה לפרגמנט
+        fragment.appendChild(actionCard);
+    });
+    
+    // הוספת הפרגמנט לדום
+    actionsList.appendChild(fragment);
+    
+    // נתאים את התצוגה לכיוון העברית (מימין לשמאל)
+    actionsList.style.direction = 'rtl';
+}
 
 
 }

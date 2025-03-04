@@ -268,6 +268,7 @@
         <!-- Action cards container -->
         <div class="actions-list" id="actions-list">
           <!-- Action cards will be inserted here dynamically -->
+       
         </div>
       </div>
       
@@ -287,8 +288,31 @@
         <div class="action-meta">
           <span class="action-date"><i class="far fa-calendar"></i> 01/01/2025</span>
           <span class="action-time"><i class="far fa-clock"></i> 12:34</span>
+           <template id="action-card-template">
+    <div class="action-card">
+      <div class="action-icon">
+        <i class="fas fa-plus"></i>
+      </div>
+      <div class="action-details">
+        <div class="action-title">הוספת ספר: "שם הספר"</div>
+        <div class="action-meta">
+          <span class="action-date"><i class="far fa-calendar"></i> 01/01/2025</span>
+          <span class="action-time"><i class="far fa-clock"></i> 12:34</span>
+          <span class="action-author"><i class="fas fa-user-edit"></i> שם המחבר</span>
+
         </div>
-        <div class="action-desc">מספר מדף: A1, קטגוריה: היסטוריה</div>
+        <div class="action-extra">
+          <span class="action-book-id"><i class="fas fa-barcode"></i> מזהה: <span class="id-value">123456</span></span>
+        </div>
+      
+      </div>
+    </div>
+  </template>
+        </div>
+        <div class="action-extra">
+          <span class="action-book-id"><i class="fas fa-barcode"></i> מזהה: <span class="id-value">123456</span></span>
+        </div>
+      
       </div>
     </div>
   </template>
