@@ -1,7 +1,6 @@
 class LibraryApp {
     constructor() {
         this.currentUser = null;
-        this.books = [];
         this.initRouter(); // Initialize the routing system when the object is created
     }
 
@@ -100,29 +99,31 @@ class LibraryApp {
     // Function to render the books page
     renderBooksPage() {
         const template = document.getElementById('books-template');
-        if (template) {
 
-         
+        this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        console.log("this.currentUser 2: " + this.currentUser.userName);
+
+        if (template) {
 
             document.getElementById('router-view').innerHTML = template.innerHTML;
             this.loadBooks();  // Load the books when rendering the books page
-    
+
             // הסרנו את האזנות האירועים האלה כדי שהסינון יתבצע רק עם כפתור הסינון
             // document.getElementById('search-books').addEventListener('input', () => {
             //     this.filterBooks();
             // });
-    
+
             // document.querySelectorAll(".filter-select").forEach(select => {
             //     select.addEventListener("change", () => {
             //         this.filterBooks(); // filter by combo box
             //     });
             // });
-    
+
             // רק לחיצה על כפתור הסינון תפעיל את פעולת הסינון
             document.getElementById('filter-btn').addEventListener("click", () => {
                 this.filterBooks();
             });
-    
+
             // תמיכה בלחיצה על Enter בשדה החיפוש
             document.getElementById('search-books').addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') {
@@ -130,23 +131,23 @@ class LibraryApp {
                     this.filterBooks();
                 }
             });
-    
+
             document.getElementById('add-book-btn')?.addEventListener('click', () => {
                 window.location.hash = '/add-book'; // Navigate to the add-book page
             });
-    
+
             document.addEventListener('click', (e) => {
                 if (e.target.matches('.delete-btn')) {
                     e.preventDefault();
                     const bookId = e.target.getAttribute('data-book-id');
-                    
+
                     // הוספת אישור לפני מחיקה
                     if (confirm('האם אתה בטוח שברצונך למחוק ספר זה?')) {
                         this.deleteBook(bookId);
                     }
                 }
             });
-            
+
             document.addEventListener('click', (e) => {
                 if (e.target.matches('.edit-btn')) {
                     e.preventDefault();
@@ -157,31 +158,7 @@ class LibraryApp {
             });
 
             this.setupTopBarListeners();
-            
-        //     // לינק לספרים
-        //     document.getElementById('books-link')?.addEventListener('click', (e) => {
-        //         e.preventDefault();
-        //         window.location.hash = '/books';
-        //     });
-            
-        //     // לינק לפעולות שלי
-        //     document.getElementById('my-actions-link')?.addEventListener('click', (e) => {
-        //         e.preventDefault();
-        //         window.location.hash = '/my-actions';
-        //     });
-            
-        //     // כפתור התנתקות
-        //     document.querySelector('.btn-logout')?.addEventListener('click', () => {
-        //         // רישום פעולת התנתקות
-        //         if (this.currentUser) {
-        //             this.recordAction('logout', `התנתקות מהמערכת`, null,
-        //                 `משתמש ${this.currentUser.userName} התנתק מהמערכת`);
-        //         }
-        //         this.currentUser = null;
-        //         window.location.hash = '/login';
-        //     });
-        //    // פונקציה להגדרת האזנה לאירועים בסרגל העליון
-   
+
         }
     }
 
@@ -197,7 +174,7 @@ class LibraryApp {
 
 
     renderEditBookPage(params) {
-        
+
         const bookId = params.id;
         console.log(`עריכת ספר עם מזהה: ${bookId}`);
         const template = document.getElementById('edit-book-template');
@@ -215,7 +192,7 @@ class LibraryApp {
         }
     }
 
-    
+
     // פונקציה להצגת עמוד הפעולות שלי
     renderMyActionsPage() {
         const template = document.getElementById('my-actions-template');
@@ -233,20 +210,11 @@ class LibraryApp {
             // הגדרת האזנה לאירועים בסרגל העליון
             this.setupTopBarListeners();
 
-            // הגדרת לינק פעיל
-            const currentPath = window.location.hash.slice(1);
-            document.querySelectorAll('.nav-link').forEach(link => {
-                link.classList.remove('active');
-            });
-            if (currentPath === '/my-actions') {
-                document.getElementById('my-actions-link')?.classList.add('active');
-            }
-
             // הגדרת פילטרים של פעולות
             this.setupActionFilters();
 
             // טעינת היסטוריית פעולות
-            //this.loadActionsHistory();
+            this.loadActionsHistory();
         }
     }
 
@@ -274,22 +242,10 @@ class LibraryApp {
             this.currentUser = null;
             window.location.hash = '/login';
         });
-
-        // הגדרת לינק פעיל
-        // const currentPath = window.location.hash.slice(1);
-        // document.querySelectorAll('.nav-link').forEach(link => {
-        //     link.classList.remove('active');
-        // });
-
-        // if (currentPath === '/books') {
-        //     document.getElementById('books-link')?.classList.add('active');
-        // } else if (currentPath === '/my-actions') {
-        //     document.getElementById('my-actions-link')?.classList.add('active');
-        // }
     }
 
 
-    
+
 
     // Function to handle login logic
     async handleLogin(event) {
@@ -305,6 +261,7 @@ class LibraryApp {
             if (user) {
                 if (user.password === password) {
                     window.location.hash = '/books'; // Navigate to books page on successful login
+                    localStorage.setItem('currentUser', JSON.stringify(user));
                 } else {
                     alert("The password is incorrect.");
                 }
@@ -323,16 +280,15 @@ class LibraryApp {
         const id = document.getElementById('id').value;
         const password = document.getElementById('password').value;
         const email = document.getElementById('email').value;
-
-        const newUser = { userName: username, password: password, email: email, id: id };
+        const newUser = { userName: username, password: password, email: email, id: id, actionsHistory: [] };
         const request = new FXMLHttpRequest();
         request.open("POST", "");
         request.onload = (user) => {
             this.hideLoading();
             if (user) {
                 alert("Registration successful!");
-                this.currentUser = user;
                 window.location.hash = '/books'; // Navigate to books page after successful registration
+                localStorage.setItem('currentUser', JSON.stringify(user));
             } else {
                 alert("The user already exists.");
             }
@@ -341,27 +297,55 @@ class LibraryApp {
         request.send(newUser);
     }
 
- 
+    AddAction(action) {
+        console.log("action" + action.title);
+        console.log("this.currentUser:" + this.currentUser.userName);
+
+        // הוסף את הפעולה למערך של המשתמש
+        this.currentUser.actionsHistory.push(action);
+        localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
+        console.log("this.currentUser.actionsHistory " + this.currentUser.actionsHistory[0].type);
+        user = this.currentUser;
+        // שמור את המשתמש המעודכן בשרת באמצעות PUT
+        const request = new FXMLHttpRequest();
+        request.open("PUT", `/users/${this.currentUser.userName}`);
+        console.log(`/users/${this.currentUser.userName}`);
+        request.onerror = (error) => {
+            this.hideLoading();
+            console.error("Error adding action to user history:", error);
+            return null;
+        };
+        request.onload = (updatedUser) => {
+            this.hideLoading();
+            console.log("Action added successfully to user history");
+            localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+        };
+        this.showLoading();
+        request.send(this.currentUser);
+
+    };
+
+
 
     filterBooks() {
         const searchTerm = document.querySelector("#search-books")?.value.trim().toLowerCase() || "";
         // תיקון: חסר # לפני מזהי האלמנטים וצריך להשתמש ב-querySelector במקום querySelectorAll
         const shelfFilter = document.querySelector("#shelf-filter")?.value || ""; // מיקום במדף
         const statusFilter = document.querySelector("#status-filter")?.value || ""; // סטטוס
-        
+
         console.log("shelfFilter: " + shelfFilter);
         console.log("statusFilter: " + statusFilter);
-        
+
         const filteredBooks = this.books.filter(book => {
-            const matchesSearch = searchTerm === "" || 
-                                 book.title.toLowerCase().includes(searchTerm) || 
-                                 book.author.toLowerCase().includes(searchTerm);
+            const matchesSearch = searchTerm === "" ||
+                book.title.toLowerCase().includes(searchTerm) ||
+                book.author.toLowerCase().includes(searchTerm);
             const matchesShelf = shelfFilter === "" || book.shelf === shelfFilter;
             const matchesStatus = statusFilter === "" || book.status === statusFilter;
-            
+
             return matchesSearch && matchesShelf && matchesStatus;
         });
-        
+
         this.displayBooks(filteredBooks);
     }
 
@@ -426,13 +410,39 @@ class LibraryApp {
         };
         request.onload = (book) => {
             this.hideLoading();
+            // יצירת פעולה חדשה
+
             setTimeout(() => {  //the timeout is in order to the code will can be hide the loading before alert
                 alert(`The book ${book.title} has been successfully added!`);
                 window.location.hash = '/books';
             }, 30);
+            const actionId = this.getNextActionId(); // פונקציה שמחזירה ID רץ
+            const newAction = {
+                id: actionId,
+                type: 'add',
+                title: `הוספת ספר: "${bookData.title}"`,
+                timestamp: new Date(),
+                details: `מספר מדף: ${bookData.shelf}, קטגוריה: ${bookData.category}`
+            };
+
+            // הוספת הפעולה למערך הפעולות של המשתמש
+            this.AddAction(newAction);
         };
         this.showLoading();
         request.send(bookData);
+
+
+    }
+
+    // פונקציית עזר לקבלת מספר ID רץ עבור פעולות חדשות
+    getNextActionId() {
+        if (!this.currentUser || !this.currentUser.actionsHistory) {
+            return 1;
+        }
+
+        // חיפוש ה-ID הגבוה ביותר הקיים והוספת 1
+        const maxId = Math.max(0, ...this.currentUser.actionsHistory.map(action => action.id || 0));
+        return maxId + 1;
     }
 
     async updateBook(bookId, bookData) {
@@ -443,7 +453,7 @@ class LibraryApp {
             setTimeout(() => {  //the timeout is in order to the code will can be hide the loading before alert
                 alert(error.error || "There was an error updating the book.");
             }, 30);
-        };
+        }; K
         request.onload = (book) => {
             this.hideLoading();
             setTimeout(() => {  //the timeout is in order to the code will can be hide the loading before alert
@@ -476,7 +486,6 @@ class LibraryApp {
         request.send();
     }
 
-    
 
     // פונקציה להוספה
     async loadBookForEdit(bookId) {
@@ -538,21 +547,21 @@ class LibraryApp {
         }
 
         booksList.innerHTML = books.map(book => `
-            <tr>
-                <td><img src="${book.image}" alt="${book.title} Image" /></td>
-                <td>${book.title}</td>
-                <td>${book.author}</td>
-                <td>${book.year}</td>
-                <td>${book.id}</td>
-                <td>${book.category}</td>
-                <td>${book.shelf}</td>
-                <td>${book.status}</td>
-                <td>
-                    <button class="edit-btn" data-book-id="${book.id}"><i class="fa-regular fa-pen-to-square"></i></button>
-                    <button class="delete-btn" data-book-id="${book.id}"><i class="fa-solid fa-trash"></i></button>
-                </td>
-            </tr>
-        `).join('');
+        <tr>
+            <td><img src="${book.image}" alt="${book.title} Image" /></td>
+            <td>${book.title}</td>
+            <td>${book.author}</td>
+            <td>${book.year}</td>
+            <td>${book.id}</td>
+            <td>${book.category}</td>
+            <td>${book.shelf}</td>
+            <td>${book.status}</td>
+            <td>
+                <button class="edit-btn" data-book-id="${book.id}"><i class="fa-regular fa-pen-to-square"></i></button>
+                <button class="delete-btn" data-book-id="${book.id}"><i class="fa-solid fa-trash"></i></button>
+            </td>
+        </tr>
+    `).join('');
     }
 
 
@@ -569,13 +578,13 @@ class LibraryApp {
     displayEmptyBooksState() {
         const booksList = document.getElementById('books-list');
         booksList.innerHTML = `
-        <tr>
-            <td colspan="9" class="empty-state">
-                <div class="empty-state-icon"><i class="fas fa-books"></i></div>
-                <div class="empty-state-title">אין ספרים להצגה</div>
-                <div class="empty-state-desc">לחץ על 'הוסף ספר חדש' כדי להתחיל לנהל את מלאי הספרייה</div>
-            </td>
-        </tr>`;
+    <tr>
+        <td colspan="9" class="empty-state">
+            <div class="empty-state-icon"><i class="fas fa-books"></i></div>
+            <div class="empty-state-title">אין ספרים להצגה</div>
+            <div class="empty-state-desc">לחץ על 'הוסף ספר חדש' כדי להתחיל לנהל את מלאי הספרייה</div>
+        </td>
+    </tr>`;
     }
 
     // פונקציה להצגת הודעות למשתמש
@@ -591,9 +600,9 @@ class LibraryApp {
         if (type === 'danger') icon = 'times-circle';
 
         alertElement.innerHTML = `
-        <i class="fas fa-${icon}"></i>
-        <span>${message}</span>
-    `;
+    <i class="fas fa-${icon}"></i>
+    <span>${message}</span>
+`;
 
         // הוספה לדום
         document.body.appendChild(alertElement);
@@ -615,49 +624,49 @@ class LibraryApp {
         }, 3000);
     }
 
-    
+
     // פונקציה להצגת עמוד הפעולות שלי
     renderMyActionsPage() {
         const template = document.getElementById('my-actions-template');
         if (template) {
             document.getElementById('router-view').innerHTML = template.innerHTML;
-            
+
             // שימוש בתוכן התבנית ישירות
             const booksTemplateContent = document.getElementById('books-template').content;
             const topBarNode = booksTemplateContent.querySelector('.top-bar').cloneNode(true);
-            
+
             // החלפת אלמנט הפלייסהולדר בסרגל העליון
             const topBarPlaceholder = document.getElementById('topbar-placeholder');
             if (topBarPlaceholder) {
                 topBarPlaceholder.parentNode.replaceChild(topBarNode, topBarPlaceholder);
-                
+
                 // מציאת הלינקים בסרגל שהוספנו ועדכון הפעיל
                 const links = document.querySelectorAll('.nav-link');
                 links.forEach(link => {
                     link.classList.remove('active');
                 });
                 document.getElementById('my-actions-link')?.classList.add('active');
-                
+
                 // עדכון שם המשתמש אם זמין
                 if (this.currentUser && this.currentUser.userName) {
                     document.getElementById('username-display').textContent = this.currentUser.userName;
                 }
             }
-            
+
             // הוספת פוטר
             const footerTemplate = document.getElementById('footer-template');
             if (footerTemplate) {
                 document.getElementById('footer-placeholder').innerHTML = footerTemplate.innerHTML;
             }
-            
+
             // הגדרת האזנה לאירועים בסרגל העליון
             this.setupTopBarListeners();
-            
+
             // הגדרת פילטרים של פעולות
             this.setupActionFilters();
-            
+
             // טעינת היסטוריית פעולות
-            this.loadActionsHistory();
+            this.displayActions(this.actionsHistory);
         }
     }
 
@@ -684,16 +693,16 @@ class LibraryApp {
 
     // פונקציה לטעינת היסטוריית פעולות
     loadActionsHistory() {
-        if (this.actionsHistory.length === 0) {
-            // אם אין פעולות שנרשמו, השתמש בנתוני דוגמה
-            this.initializeSampleActions();
-        }
+        // if (this.actionsHistory.length === 0) {
+        //     // אם אין פעולות שנרשמו, השתמש בנתוני דוגמה
+        //     this.initializeSampleActions();
+        // }
 
         // הצגת פעולות
         this.displayActions(this.actionsHistory);
 
         // עדכון סטטיסטיקה
-        this.updateActionStats();
+        //this.updateActionStats();
     }
 
     // פונקציה לאתחול דוגמאות פעולות
@@ -739,15 +748,17 @@ class LibraryApp {
     displayActions(actions) {
         const actionsList = document.getElementById('actions-list');
 
-        // ניקוי הרשימה
+        // ניקוי הרשימה - אנחנו צריכים להסיר את כל התוכן, כולל ההודעה "אין פעולות"
         actionsList.innerHTML = '';
 
-        if (actions.length === 0) {
+        // בדיקה אם ההיסטוריה ריקה
+        if (!actions || actions.length === 0) {
+            // הצג את הודעת "אין פעולות" שהיא כבר חלק מהתבנית
             actionsList.innerHTML = `
-            <div class="no-actions-message">
-                <i class="fas fa-history" style="font-size: 24px; margin-bottom: 10px;"></i>
-                <p>אין פעולות קודמות להצגה</p>
-            </div>`;
+        <div class="no-actions-message">
+            <i class="fas fa-history" style="font-size: 24px; margin-bottom: 10px;"></i>
+            <p>אין פעולות קודמות להצגה</p>
+        </div>`;
             return;
         }
 
@@ -777,6 +788,8 @@ class LibraryApp {
                 iconElement.className = 'fas fa-sign-in-alt';
             } else if (action.type === 'register') {
                 iconElement.className = 'fas fa-user-plus';
+            } else if (action.type === 'logout') {
+                iconElement.className = 'fas fa-sign-out-alt';
             }
 
             // הגדרת כותרת הפעולה
@@ -795,6 +808,7 @@ class LibraryApp {
             actionCard.querySelector('.action-desc').textContent = action.details;
 
             // הוספת השהייה ליצירת אפקט הנפשה מדורג
+            // אנחנו משתמשים בסגנון ישיר כאן כי אין לנו מחלקות CSS מוכנות להשהיות
             const delay = index * 0.1;
             const actionCardElement = actionCard.querySelector('.action-card');
             actionCardElement.style.animationDelay = `${delay}s`;
@@ -807,10 +821,6 @@ class LibraryApp {
         // הוספת הפרגמנט לדום
         actionsList.appendChild(fragment);
     }
-
-
-
-
 
 
 
