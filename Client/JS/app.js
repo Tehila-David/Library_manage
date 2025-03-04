@@ -152,7 +152,6 @@ class LibraryApp {
                 if (e.target.matches('.edit-btn')) {
                     e.preventDefault();
                     const bookId = e.target.getAttribute('data-book-id');
-                    console.log("hii edit");
                     window.location.hash = `/edit-book/${bookId}`;
                 }
             });
@@ -168,7 +167,10 @@ class LibraryApp {
         const template = document.getElementById('add-book-template');
         if (template) {
             document.getElementById('router-view').innerHTML = template.innerHTML;
-            document.getElementById('add-book-form')?.addEventListener('submit', (e) => this.handleAddBook(e));
+            document.getElementById('add-book-form')?.addEventListener('submit', (e) => {
+                this.handleAddBook(e);
+                window.location.hash = '/books';
+        });
         }
     }
 
@@ -185,7 +187,11 @@ class LibraryApp {
             this.loadBookForEdit(bookId);
 
             // הוספת מאזיני אירועים
-            document.getElementById('edit-book-form')?.addEventListener('submit', (e) => this.handleEditBook(e));
+            document.getElementById('edit-book-form')?.addEventListener('submit', (e) => {
+                this.handleEditBook(e);
+                window.location.hash = '/books'; // חזרה לדף הספרים
+            });
+
             document.querySelector('.btn-cancel')?.addEventListener('click', () => {
                 window.location.hash = '/books'; // חזרה לדף הספרים
             });
@@ -453,7 +459,7 @@ class LibraryApp {
             setTimeout(() => {  //the timeout is in order to the code will can be hide the loading before alert
                 alert(error.error || "There was an error updating the book.");
             }, 30);
-        }; K
+        }; 
         request.onload = (book) => {
             this.hideLoading();
             setTimeout(() => {  //the timeout is in order to the code will can be hide the loading before alert
