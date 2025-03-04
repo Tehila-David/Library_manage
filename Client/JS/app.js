@@ -107,7 +107,9 @@ class LibraryApp {
 
             document.getElementById('router-view').innerHTML = template.innerHTML;
             this.loadBooks();  // Load the books when rendering the books page
-
+            document.getElementById('search-books').addEventListener("input", () => {
+                this.filterBooksBySearch();
+            });
             // הסרנו את האזנות האירועים האלה כדי שהסינון יתבצע רק עם כפתור הסינון
             // document.getElementById('search-books').addEventListener('input', () => {
             //     this.filterBooks();
@@ -123,14 +125,8 @@ class LibraryApp {
             document.getElementById('filter-btn').addEventListener("click", () => {
                 this.filterBooks();
             });
+           
 
-            // תמיכה בלחיצה על Enter בשדה החיפוש
-            document.getElementById('search-books').addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    this.filterBooks();
-                }
-            });
 
             document.getElementById('add-book-btn')?.addEventListener('click', () => {
                 window.location.hash = '/add-book'; // Navigate to the add-book page
@@ -331,6 +327,19 @@ class LibraryApp {
 
     };
 
+    filterBooksBySearch() {
+        const searchTerm = document.querySelector("#search-books")?.value.trim().toLowerCase() || "";
+       
+        const filteredBooks = this.books.filter(book => {
+            const matchesSearch = searchTerm === "" ||
+                book.title.toLowerCase().includes(searchTerm) ||
+                book.author.toLowerCase().includes(searchTerm);
+           
+            return matchesSearch;
+        });
+
+        this.displayBooks(filteredBooks);
+    }
 
 
     filterBooks() {
