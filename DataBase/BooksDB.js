@@ -39,7 +39,7 @@ class BooksDB {
       const existingBook = books.find((book) => book.title === newBook.title);
       
       if (existingBook) {
-        alert("A book with this title already exists.");
+        this.showAlert("קיים כבר ספר בשם זה",'warning');
         return null;
       }
       

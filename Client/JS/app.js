@@ -285,10 +285,10 @@ class LibraryApp {
                     window.location.hash = '/books'; // Navigate to books page on successful login
                     localStorage.setItem('currentUser', JSON.stringify(user));
                 } else {
-                    alert("The password is incorrect.");
+                    this.showAlert("סיסמה שגויה",'danger');
                 }
             } else {
-                alert("The user does not exist.");
+                this.showAlert("שם המשתמש אינו קיים במערכת",'danger');
             }
         };
         this.showLoading();
@@ -308,11 +308,11 @@ class LibraryApp {
         request.onload = (user) => {
             this.hideLoading();
             if (user) {
-                alert("Registration successful!");
+                this.showAlert("נרשמת בהצלחה!",'success');
                 window.location.hash = '/books'; // Navigate to books page after successful registration
                 localStorage.setItem('currentUser', JSON.stringify(user));
             } else {
-                alert("The user already exists.");
+                this.showAlert("קיים משתמש עם שם זהה, אנא בחר שם משתמש אחר",'warning');
             }
         };
         this.showLoading();
@@ -348,7 +348,7 @@ class LibraryApp {
         request.onerror = (error) => {
             this.hideLoading();
             setTimeout(() => {  //the timeout is in order to the code will can be hide the loading before alert
-                alert(`Error loading book: ${error.error}`);
+                this.showAlert(`כישלון בטעינת הספר: ${error.error}`,'danger');
             }, 30);
         };
         request.onload = (book) => {
@@ -392,7 +392,7 @@ class LibraryApp {
         request.onerror = (error) => {
             this.hideLoading();
             setTimeout(() => {  //the timeout is in order to the code will can be hide the loading before alert
-                alert(error.error || "There was an error adding the book.");
+                this.showAlert(error.error || "אופס. קרתה תקלה כלשהי בזמן הוספת הספר, נסה שוב",'danger');
             }, 30);
         };
         request.onload = (book) => {
@@ -400,7 +400,7 @@ class LibraryApp {
             // Create new action
 
             setTimeout(() => {  //the timeout is in order to the code will can be hide the loading before alert
-                alert(`The book ${book.title} has been successfully added!`);
+                this.showAlert(`הספר "${book.title}" נוסף בהצלחה למערכת!`,'success');
                 window.location.hash = '/books?refresh=' + new Date().getTime();
             }, 30);
             const actionId = this.getNextActionId(); // Function that returns a running ID
@@ -427,14 +427,14 @@ class LibraryApp {
         request.onerror = (error) => {
             this.hideLoading();
             setTimeout(() => {  //the timeout is in order to the code will can be hide the loading before alert
-                alert(error.error || "There was an error updating the book.");
+                this.showAlert(error.error || "אופס. קרתה תקלה כלשהי בזמן עדכון הספר. נסה שוב",'danger');
             }, 30);
         };
         request.onload = (book) => {
             this.hideLoading();
 
             setTimeout(() => {  //the timeout is in order to the code will can be hide the loading before alert
-                alert(`The book ${bookData.title} has been successfully updated!`);
+                this.showAlert(`פרטי הספר "${bookData.title}" עודכנו בהצלחה!`,'success');
                 window.location.hash = '/books';
             }, 30);
 
@@ -477,14 +477,14 @@ class LibraryApp {
         request.onerror = (error) => {
             this.hideLoading();
             setTimeout(() => {  //the timeout is in order to the code will can be hide the loading before alert
-                alert(error.error || "There was an error deleting the book.");
+                this.showAlert(error.error || "אופס. קרתה תקלה כלשהי בזמן מחיקת הספר. נסה שוב",'danger');
             }, 30);
         };
         request.onload = () => {
             this.hideLoading();
 
             setTimeout(() => {  //the timeout is in order to the code will can be hide the loading before alert
-                alert(`The book  ${bookDetails.title} has been successfully deleted!`);
+                this.showAlert(`הספר  "${bookDetails.title}" נמחק בהצלחה!`,'success');
                 this.loadBooks(); // Refresh the book list
             }, 30);
 
@@ -517,7 +517,7 @@ class LibraryApp {
         request.onerror = (error) => {
             this.hideLoading();
             setTimeout(() => {
-                alert(`שגיאה בטעינת פרטי הספר: ${error.error}`);
+                this.showAlert(`שגיאה בטעינת פרטי הספר: ${error.error}`,'danger');
                 window.location.hash = '/books';
             }, 10000);
         };
@@ -534,7 +534,7 @@ class LibraryApp {
                 document.getElementById('edit-book-image').value = book.image;
                 document.getElementById('edit-book-status').value = book.status;
             } else {
-                alert("הספר לא נמצא.");
+                this.showAlert("הספר לא נמצא.",'warning');
                 window.location.hash = '/books';
             }
         };
@@ -948,7 +948,7 @@ class LibraryApp {
         document.getElementById("loading").style.display = "none";
     }
 
-    // Function to show alerts to the user
+// Function to show alerts to the user
     showAlert(message, type = 'info') {
         // Create alert element
         const alertElement = document.createElement('div');
@@ -960,30 +960,32 @@ class LibraryApp {
         if (type === 'warning') icon = 'exclamation-triangle';
         if (type === 'danger') icon = 'times-circle';
 
+        // Create close button
+        const closeButton = document.createElement('button');
+        closeButton.innerHTML = '&times;';
+        closeButton.className = 'alert-close';
+        closeButton.onclick = () => alertElement.remove();
+
+        // Set inner HTML
         alertElement.innerHTML = `
-    <i class="fas fa-${icon}"></i>
-    <span>${message}</span>
-`;
+            <i class="fas fa-${icon}"></i>
+            <span>${message}</span>
+        `;
+        alertElement.appendChild(closeButton);
 
         // Add to DOM
         document.body.appendChild(alertElement);
 
-        // Position the alert
-        alertElement.style.position = 'fixed';
-        alertElement.style.top = '20px';
-        alertElement.style.left = '50%';
-        alertElement.style.transform = 'translateX(-50%)';
-        alertElement.style.zIndex = '9999';
-        alertElement.style.minWidth = '300px';
-
-        // Remove after timeout
-        setTimeout(() => {
+        // Remove after timeout if not closed manually
+        const timeout = setTimeout(() => {
             alertElement.style.opacity = '0';
-            setTimeout(() => {
-                alertElement.remove();
-            }, 300);
-        }, 3000);
+            setTimeout(() => alertElement.remove(), 300);
+        }, 6000);
+
+        // Prevent removal if closed manually
+        closeButton.addEventListener('click', () => clearTimeout(timeout));
     }
+
 }
 
 // Create an instance of LibraryApp

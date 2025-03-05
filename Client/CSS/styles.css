@@ -62,6 +62,10 @@ a:hover {
   color: var(--primary-dark);
 }
 
+i{
+  pointer-events: none;
+}
+
 /* ============= BUTTONS ============= */
 .btn {
   display: inline-flex;
@@ -83,6 +87,7 @@ a:hover {
 
 .btn i {
   margin-left: 8px;
+  pointer-events: none;
 }
 
 .btn:hover {
@@ -988,29 +993,37 @@ table img {
 
 /* ============= ALERTS & NOTIFICATIONS ============= */
 .alert {
-  padding: 15px 20px;
-  border-radius: var(--border-radius);
-  margin-bottom: 20px;
-  box-shadow: var(--shadow-small);
+  position: fixed;
+  top: 10px;
+  left: 35%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  padding: 10px 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  font-size: 16px;
+  min-width: 300px;
+  max-width: 500px; /* מאפשר לתיבה לגדול אבל מגביל רוחב */
   display: flex;
   align-items: center;
+  gap: 10px;
+  padding-left: 40px; /* משאיר מקום לאיקס */
 }
 
 .alert i {
   font-size: 20px;
-  margin-left: 15px;
+}
+
+.alert span {
+  flex-grow: 1; /* מבטיח שהטקסט יתפוס את כל המקום הדרוש */
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .alert-success {
-  background-color: #e6f7e6;
-  color: #28a745;
+  background-color: #d4edda;
+  color: #155724;
   border-right: 4px solid #28a745;
-}
-
-.alert-info {
-  background-color: #e6f2ff;
-  color: var(--primary-color);
-  border-right: 4px solid var(--primary-color);
 }
 
 .alert-warning {
@@ -1024,6 +1037,33 @@ table img {
   color: #721c24;
   border-right: 4px solid #dc3545;
 }
+
+.alert-info {
+  background-color: #cce5ff;
+  color: #004085;
+  border-right: 4px solid var(--primary-color);
+}
+
+/* איקס */
+.alert-close {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: inherit;
+}
+
+.alert-close:hover {
+  background-color: #21252955;
+  color: white;
+  border-radius: 100%;
+}
+
+
 
 /* ============= RESPONSIVE DESIGN ============= */
 @media (max-width: 1200px) {
@@ -1114,3 +1154,4 @@ table img {
     flex: 1;
   }
 }
+
