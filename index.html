@@ -177,40 +177,14 @@
               </tr>
             </thead>
             <tbody id="books-list">
-              <!-- תוכן דינמי יוכנס כאן -->
+              <!-- Dynamic content will be inserted here -->
             </tbody>
           </table>
         </div>
       </div>
 
-      <!-- Footer -->
-      <footer class="site-footer">
-        <div class="footer-container">
-          <div class="footer-section">
-            <h3>ספריית האוניברסיטה</h3>
-            <p>שעות פעילות:</p>
-            <p>ראשון-חמישי: 8:00-20:00</p>
-            <p>שישי: 8:00-14:00</p>
-          </div>
-          <div class="footer-section">
-            <h3>קישורים מהירים</h3>
-            <ul>
-              <li><a href="#/books">ניהול ספרים</a></li>
-              <li><a href="#/my-actions">הפעולות שלי</a></li>
-              <li><a href="https://library.example.edu/faq" target="_blank">שאלות נפוצות</a></li>
-            </ul>
-          </div>
-          <div class="footer-section">
-            <h3>צור קשר</h3>
-            <p><i class="fas fa-phone"></i> 03-1234567</p>
-            <p><i class="fas fa-envelope"></i> library@example.edu</p>
-            <p><i class="fas fa-map-marker-alt"></i> רחוב האוניברסיטה 1, תל אביב</p>
-          </div>
-        </div>
-        <div class="footer-bottom">
-          <p>© 2025 מערכת ניהול ספרייה. כל הזכויות שמורות.</p>
-        </div>
-      </footer>
+      <!-- Footer placeholder for this page -->
+      <div id="footer-placeholder"></div>
     </div>
   </template>
 
@@ -272,7 +246,7 @@
         </div>
       </div>
       
-      <!-- Footer will be inserted via JS -->
+      <!-- Footer placeholder for this page -->
       <div id="footer-placeholder"></div>
     </div>
   </template>
@@ -288,31 +262,11 @@
         <div class="action-meta">
           <span class="action-date"><i class="far fa-calendar"></i> 01/01/2025</span>
           <span class="action-time"><i class="far fa-clock"></i> 12:34</span>
-           <template id="action-card-template">
-    <div class="action-card">
-      <div class="action-icon">
-        <i class="fas fa-plus"></i>
-      </div>
-      <div class="action-details">
-        <div class="action-title">הוספת ספר: "שם הספר"</div>
-        <div class="action-meta">
-          <span class="action-date"><i class="far fa-calendar"></i> 01/01/2025</span>
-          <span class="action-time"><i class="far fa-clock"></i> 12:34</span>
           <span class="action-author"><i class="fas fa-user-edit"></i> שם המחבר</span>
-
         </div>
         <div class="action-extra">
           <span class="action-book-id"><i class="fas fa-barcode"></i> מזהה: <span class="id-value">123456</span></span>
         </div>
-      
-      </div>
-    </div>
-  </template>
-        </div>
-        <div class="action-extra">
-          <span class="action-book-id"><i class="fas fa-barcode"></i> מזהה: <span class="id-value">123456</span></span>
-        </div>
-      
       </div>
     </div>
   </template>
@@ -382,7 +336,7 @@
         </form>
       </div>
 
-      <!-- Footer will be inserted via JS -->
+      <!-- Footer placeholder for this page -->
       <div id="footer-placeholder"></div>
     </div>
   </template>
@@ -442,7 +396,6 @@
                 <option value="מושאל">מושאל</option>
                 <option value="מאוחר">באיחור</option>
                 <option value="לא זמין">לא זמין</option>
-              </select>
             </select>
           </div>
           <button type="submit" class="btn btn-success">
@@ -454,12 +407,12 @@
         </form>
       </div>
 
-      <!-- Footer will be inserted via JS -->
+      <!-- Footer placeholder for this page -->
       <div id="footer-placeholder"></div>
     </div>
   </template>
 
-  <!-- Footer Template -->
+  <!-- Footer Template - Single shared template -->
   <template id="footer-template">
     <footer class="site-footer">
       <div class="footer-container">
@@ -490,7 +443,7 @@
     </footer>
   </template>
 
-  <!-- סקריפטים (ניתן להתאימם) -->
+  <!-- Scripts (can be customized) -->
   <script src="./Database/UsersDB.js" defer></script>
   <script src="./Database/BooksDB.js"></script>
   <script src="./Server/auth_server.js" defer></script>

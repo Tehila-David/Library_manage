@@ -701,6 +701,20 @@ table img {
   min-width: 150px;
   margin: 0;
 }
+.action-card[data-type="POST"] .action-icon {
+  background-color: #e3f9e5;
+  color: var(--success-color);
+}
+
+.action-card[data-type="PUT"] .action-icon {
+  background-color: #fff8e6;
+  color: var(--edit-color);
+}
+
+.action-card[data-type="DELETE"] .action-icon {
+  background-color: #ffebee;
+  color: var(--delete-color);
+}
 
 .date-filter {
   padding: 10px 15px;

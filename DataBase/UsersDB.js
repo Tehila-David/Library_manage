@@ -37,11 +37,12 @@ class UsersDB  {
   }
 
   //Update a user's information 
-  updateUser(userName, newData) {
+  updateUser(id, newData) {
     const users = this.loadUsers();
-    const user = users.find((user) => user.userName === userName);
-    if (user) {
-      Object.assign(user, newData);
+    //const user = users.find((user) => user.userName === userName);
+    const userIndex = users.findIndex((user) => user.id === id);
+    if (userIndex !== -1) {
+      Object.assign(users[userIndex], newData);
       this.saveUsers(users);
       return true;
     }
