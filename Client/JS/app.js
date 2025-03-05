@@ -401,7 +401,7 @@ class LibraryApp {
 
             setTimeout(() => {  //the timeout is in order to the code will can be hide the loading before alert
                 alert(`The book ${book.title} has been successfully added!`);
-                window.location.hash = '/books';
+                window.location.hash = '/books?refresh=' + new Date().getTime();
             }, 30);
             const actionId = this.getNextActionId(); // Function that returns a running ID
             const newAction = {
@@ -433,6 +433,11 @@ class LibraryApp {
         request.onload = (book) => {
             this.hideLoading();
 
+            setTimeout(() => {  //the timeout is in order to the code will can be hide the loading before alert
+                alert(`The book ${bookData.title} has been successfully updated!`);
+                window.location.hash = '/books';
+            }, 30);
+
             // Create new action for book update
             const actionId = this.getNextActionId(); // Function that returns a running ID
             const newAction = {
@@ -447,10 +452,7 @@ class LibraryApp {
             // Add the action to the user's action array
             this.AddAction(newAction);
 
-            setTimeout(() => {  //the timeout is in order to the code will can be hide the loading before alert
-                alert("The book has been successfully updated!");
-                window.location.hash = '/books';
-            }, 30);
+           
         };
         this.showLoading();
         console.log("Sending book data:", JSON.stringify(bookData));
@@ -481,6 +483,11 @@ class LibraryApp {
         request.onload = () => {
             this.hideLoading();
 
+            setTimeout(() => {  //the timeout is in order to the code will can be hide the loading before alert
+                alert(`The book  ${bookDetails.title} has been successfully deleted!`);
+                this.loadBooks(); // Refresh the book list
+            }, 30);
+
             // Create new action for book deletion
             if (bookDetails) {
                 const actionId = this.getNextActionId(); // Function that returns a running ID
@@ -497,10 +504,7 @@ class LibraryApp {
                 this.AddAction(newAction);
             }
 
-            setTimeout(() => {  //the timeout is in order to the code will can be hide the loading before alert
-                alert("The book has been successfully deleted!");
-                this.loadBooks(); // Refresh the book list
-            }, 30);
+            
         };
         this.showLoading();
         request.send();
@@ -639,15 +643,40 @@ class LibraryApp {
     // ============= ACTION MANAGEMENT FUNCTIONS =============
 
     // Function to add an action to the user's history
+    // פתרון מעודכן לפונקציית AddAction
     AddAction(action) {
-        console.log("action" + action.title);
-        console.log("this.currentUser:" + this.currentUser.userName);
+        // וודא שה-currentUser הוא אובייקט תקין לפני התחלת פעולה
+        if (!this.currentUser || typeof this.currentUser !== 'object') {
+            console.error("currentUser is not a valid object:", this.currentUser);
+            // אפשר לנסות לטעון מחדש מ-localStorage
+            this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
 
-        // Add the action to the user's array
+            // אם עדיין לא תקין, לא נוכל להמשיך
+            if (!this.currentUser || typeof this.currentUser !== 'object') {
+                console.error("Failed to retrieve valid user from localStorage");
+                return null;
+            }
+        }
+
+        // וודא שיש מערך actionsHistory
+        if (!this.currentUser.actionsHistory) {
+            this.currentUser.actionsHistory = [];
+        }
+
+        console.log("Adding action:", action.title);
+        console.log("Current user:", this.currentUser.userName);
+
+        // הוסף את הפעולה למערך של המשתמש
         this.currentUser.actionsHistory.push(action);
-        localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
 
-        // Save the updated user to the server using PUT
+        // שמור את המשתמש המעודכן ב-localStorage
+        try {
+            localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
+        } catch (e) {
+            console.error("Error saving to localStorage:", e);
+        }
+
+        // שמור את המשתמש המעודכן בשרת באמצעות PUT
         const request = new FXMLHttpRequest();
         request.open("PUT", `/users/${this.currentUser.id}`, 'AuthServer');
 
@@ -660,13 +689,16 @@ class LibraryApp {
         request.onload = (updatedUser) => {
             this.hideLoading();
             console.log("Action added successfully to user history");
-            localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+            // חשוב לשמור את כל האובייקט המעודכן ולא רק חלק ממנו
+            if (updatedUser && typeof updatedUser === 'object') {
+                localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+            }
         };
+
         this.showLoading();
         console.log("Sending user object:", JSON.stringify(this.currentUser));
         request.send(this.currentUser);
-    }
-
+    };
     // Function to get the next available action ID
     getNextActionId() {
         if (!this.currentUser || !this.currentUser.actionsHistory) {
