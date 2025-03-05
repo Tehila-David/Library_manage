@@ -1,5 +1,6 @@
-/* Updated Color Scheme */
+/* ============= COLOR SCHEME & VARIABLES ============= */
 :root {
+  /* Colors */
   --primary-color: #0066cc;
   --primary-dark: #004c99;
   --primary-light: #e6f2ff;
@@ -10,23 +11,29 @@
   --text-light: #666;
   --text-dark: #222;
   --bg-color: #ffffff;
+  --border-color: #e0e0e0;
+  
+  /* Action Colors */
+  --success-color: #28a745;
+  --success-hover: #218838;
+  --edit-color: #ffc107;
+  --edit-hover: #e0a800;
+  --delete-color: #dc3545;
+  --delete-hover: #c82333;
+  --button-hover: #004c99;
+  
+  /* Design Elements */
   --border-radius: 8px;
   --card-radius: 10px;
   --transition-speed: 0.3s;
-  --border-color: #e0e0e0;
-  --button-hover: #004c99;
-  --delete-color: #dc3545;
-  --delete-hover: #c82333;
-  --edit-color: #ffc107;
-  --edit-hover: #e0a800;
-  --success-color: #28a745;
-  --success-hover: #218838;
+  
+  /* Shadows */
   --shadow-small: 0 2px 5px rgba(0,0,0,0.08);
   --shadow-medium: 0 4px 10px rgba(0,0,0,0.1);
   --shadow-large: 0 8px 20px rgba(0,0,0,0.12);
 }
 
-/* Base Style Improvements */
+/* ============= BASE STYLES ============= */
 body {
   font-family: 'Segoe UI', 'Heebo', Tahoma, sans-serif;
   background-color: #f6f8fa;
@@ -55,7 +62,7 @@ a:hover {
   color: var(--primary-dark);
 }
 
-/* Enhanced Button Styles */
+/* ============= BUTTONS ============= */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -89,6 +96,7 @@ a:hover {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+/* Button Sizes */
 .btn-small {
   padding: 6px 12px;
   font-size: 14px;
@@ -99,6 +107,7 @@ a:hover {
   font-size: 18px;
 }
 
+/* Button Types */
 .btn-success {
   background-color: var(--success-color);
 }
@@ -135,7 +144,16 @@ a:hover {
   color: white;
 }
 
-/* Enhanced Form Elements */
+.btn-cancel {
+  background-color: #6c757d;
+  margin-top: 10px;
+}
+
+.btn-cancel:hover {
+  background-color: #5a6268;
+}
+
+/* ============= FORM ELEMENTS ============= */
 input, select, textarea {
   width: 100%;
   padding: 12px 15px;
@@ -168,7 +186,7 @@ label {
 .form-row {
   display: flex;
   flex-wrap: wrap;
-  gap: px;
+  gap: 20px;
   margin-bottom: 20px;
 }
 
@@ -193,7 +211,7 @@ label {
   padding-right: 40px;
 }
 
-/* Login and Registration Styles */
+/* ============= LOGIN & REGISTRATION ============= */
 .login-container, .register-container {
   max-width: 450px;
   margin: 50px auto;
@@ -236,7 +254,7 @@ label {
   color: var(--text-light);
 }
 
-/* Enhanced Top Bar Styles */
+/* ============= TOP BAR ============= */
 .top-bar {
   background: linear-gradient(90deg, var(--primary-color), #0055a4);
   color: #fff;
@@ -283,8 +301,6 @@ label {
   position: relative;
   display: inline-block;
 }
-
-
 
 .logo-container:hover h1 {
   color: #f8f9fa;
@@ -349,7 +365,7 @@ label {
   color: white;
 }
 
-/* Books Page Styles */
+/* ============= BOOKS PAGE ============= */
 .books-container {
   max-width: 1200px;
   margin: 30px auto;
@@ -376,8 +392,7 @@ label {
   color: var(--accent-color);
 }
 
-/* Search and Filter Styles */
-/* Search and Filter Improvements with Equal Spacing and Heights */
+/* ============= SEARCH & FILTERS ============= */
 .search-filters {
   display: flex;
   flex-wrap: nowrap;
@@ -415,10 +430,10 @@ label {
 }
 
 .filter-select {
-  flex: 0.7; /* Reduced from 1 to make it narrower */
-  min-width: 120px; /* Reduced from 150px */
+  flex: 0.7;
+  min-width: 120px;
   position: relative;
-  max-width: 180px; /* Added maximum width */
+  max-width: 180px;
 }
 
 .filter-select select {
@@ -428,7 +443,6 @@ label {
   box-sizing: border-box;
   width: 100%;
 }
-
 
 #filter-btn {
   background-color: var(--accent-color);
@@ -448,14 +462,15 @@ label {
   background-color: var(--accent-hover);
 }
 
-/* Ensure consistent heights across all elements */
+/* Ensure consistent heights */
 .search-filters input,
 .search-filters select,
 .search-filters button {
   height: 42px !important;
   box-sizing: border-box;
 }
-/* Table Enhancements */
+
+/* ============= TABLE STYLES ============= */
 .table-container {
   border-radius: var(--card-radius);
   overflow: hidden;
@@ -463,7 +478,6 @@ label {
   margin: 20px 0;
   background-color: white;
 }
-
 
 table {
   width: 100%;
@@ -486,7 +500,6 @@ table td {
   padding: 14px 16px;
   border-bottom: 1px solid var(--border-color);
   transition: background-color 0.2s;
-
 }
 
 table tr:last-child td {
@@ -504,9 +517,15 @@ table img {
   border-radius: 4px;
   box-shadow: var(--shadow-small);
 }
-.books-table th {
+
+/* Books table specific styles */
+.books-table th, 
+.books-table td {
   text-align: center !important;
   padding: 14px 10px;
+}
+
+.books-table th {
   background-color: var(--primary-color);
   color: white;
   font-weight: 600;
@@ -515,16 +534,12 @@ table img {
   z-index: 10;
 }
 
-/* מרכוז תאי הטבלה */
 .books-table td {
-  text-align: center !important;
-  padding: 14px 10px;
   vertical-align: middle;
   border-bottom: 1px solid var(--border-color);
   transition: background-color 0.2s;
 }
 
-/* עיצוב התמונות בטבלה */
 .books-table td img {
   width: 50px;
   height: 70px;
@@ -535,25 +550,11 @@ table img {
   display: block;
 }
 
-/* שורות מרחפות (hover) */
 .books-table tr:hover td {
   background-color: var(--primary-light);
 }
 
-/* כפתורי פעולה */
-.action-buttons {
-  display: flex;
-  gap: 50px;
-  justify-content: center;
-}
-
-/* דגש על חשיבות מרכוז הטקסט (יעקוף כל הגדרה אחרת) */
-.books-table th, 
-.books-table td {
-  text-align: center !important;
-}
-
-/* Action Buttons in Tables */
+/* ============= ACTION BUTTONS ============= */
 .action-buttons {
   display: flex;
   gap: 8px;
@@ -592,7 +593,7 @@ table img {
   transform: translateY(-2px);
 }
 
-/* Status Indicators */
+/* ============= STATUS INDICATORS ============= */
 .status-badge {
   display: inline-block;
   padding: 6px 12px;
@@ -621,7 +622,7 @@ table img {
   color: #6c757d;
 }
 
-/* Add/Edit Book Forms */
+/* ============= ADD/EDIT BOOK FORMS ============= */
 .add-book-container, .edit-book-container {
   max-width: 800px;
   margin: 30px auto;
@@ -648,16 +649,7 @@ table img {
   grid-column: span 2;
 }
 
-.btn-cancel {
-  background-color: #6c757d;
-  margin-top: 10px;
-}
-
-.btn-cancel:hover {
-  background-color: #5a6268;
-}
-
-/* My Actions Page Styles */
+/* ============= MY ACTIONS PAGE ============= */
 .actions-container {
   max-width: 1200px;
   margin: 30px auto;
@@ -701,20 +693,6 @@ table img {
   min-width: 150px;
   margin: 0;
 }
-.action-card[data-type="POST"] .action-icon {
-  background-color: #e3f9e5;
-  color: var(--success-color);
-}
-
-.action-card[data-type="PUT"] .action-icon {
-  background-color: #fff8e6;
-  color: var(--edit-color);
-}
-
-.action-card[data-type="DELETE"] .action-icon {
-  background-color: #ffebee;
-  color: var(--delete-color);
-}
 
 .date-filter {
   padding: 10px 15px;
@@ -738,7 +716,7 @@ table img {
   background-color: #138496;
 }
 
-/* Action Cards */
+/* ============= ACTION CARDS ============= */
 .actions-list {
   display: flex;
   flex-direction: column;
@@ -768,6 +746,22 @@ table img {
   background-color: #e9f7fe;
   color: var(--primary-color);
   font-size: 22px;
+}
+
+/* Card type styling */
+.action-card[data-type="POST"] .action-icon {
+  background-color: #e3f9e5;
+  color: var(--success-color);
+}
+
+.action-card[data-type="PUT"] .action-icon {
+  background-color: #fff8e6;
+  color: var(--edit-color);
+}
+
+.action-card[data-type="DELETE"] .action-icon {
+  background-color: #ffebee;
+  color: var(--delete-color);
 }
 
 .action-card[data-type="add"] .action-icon {
@@ -823,7 +817,7 @@ table img {
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
 }
 
-/* Action Stats */
+/* ============= ACTION STATS ============= */
 .action-stats {
   display: flex;
   gap: 20px;
@@ -878,7 +872,7 @@ table img {
   color: #666;
 }
 
-/* Footer Styles */
+/* ============= FOOTER ============= */
 .site-footer {
   background: linear-gradient(45deg, #002855, #004c99);
   color: #ffffff;
@@ -961,7 +955,7 @@ table img {
   font-size: 14px;
 }
 
-/* Animations and Transitions */
+/* ============= ANIMATIONS & EFFECTS ============= */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
@@ -992,7 +986,7 @@ table img {
   100% { transform: translate(-50%, -50%) rotate(360deg); }
 }
 
-/* Alerts and Notifications */
+/* ============= ALERTS & NOTIFICATIONS ============= */
 .alert {
   padding: 15px 20px;
   border-radius: var(--border-radius);
@@ -1031,7 +1025,7 @@ table img {
   border-right: 4px solid #dc3545;
 }
 
-/* Responsive Design */
+/* ============= RESPONSIVE DESIGN ============= */
 @media (max-width: 1200px) {
   .actions-container, .books-container {
     max-width: 95%;
@@ -1087,7 +1081,7 @@ table img {
   .action-stats {
     flex-direction: column;
   }
-  
+        
   .search-filters {
     flex-wrap: wrap;
   }
@@ -1120,6 +1114,3 @@ table img {
     flex: 1;
   }
 }
-
-
-

@@ -107,13 +107,13 @@ class LibraryApp {
 
         if (template) {
             document.getElementById('router-view').innerHTML = template.innerHTML;
-            
+
             // Add footer
             const footerTemplate = document.getElementById('footer-template');
             if (footerTemplate) {
                 document.getElementById('footer-placeholder').innerHTML = footerTemplate.innerHTML;
             }
-             
+
             this.loadBooks();  // Load the books when rendering the books page
             document.getElementById('search-books').addEventListener("input", () => {
                 this.filterBooksBySearch();
@@ -123,7 +123,7 @@ class LibraryApp {
             document.getElementById('filter-btn').addEventListener("click", () => {
                 this.filterBooks();
             });
-            
+
             if (this.currentUser && this.currentUser.userName) {
                 document.getElementById('username-display').textContent = this.currentUser.userName;
             }
@@ -234,7 +234,7 @@ class LibraryApp {
             // Setup action filters
             this.setupActionFilters();
             this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
-            
+
             // Load action history
             this.displayActions(this.currentUser.actionsHistory);
         }
@@ -765,7 +765,7 @@ class LibraryApp {
         this.displayActions(filteredActions);
     }
 
-    // Function to display actions
+    // Function to display actions sorted by date (latest first)
     displayActions(actions) {
         const actionsList = document.getElementById('actions-list');
 
@@ -796,10 +796,10 @@ class LibraryApp {
         // Check if history is empty
         if (!actions || actions.length === 0) {
             actionsList.innerHTML = `
-    <div class="no-actions-message">
-        <i class="fas fa-history" style="font-size: 24px; margin-bottom: 10px;"></i>
-        <p>אין פעולות קודמות להצגה</p>
-    </div>`;
+<div class="no-actions-message">
+    <i class="fas fa-history" style="font-size: 24px; margin-bottom: 10px;"></i>
+    <p>אין פעולות קודמות להצגה</p>
+</div>`;
 
             // Reset statistics if no actions
             document.getElementById('added-count').textContent = '0';
@@ -808,6 +808,13 @@ class LibraryApp {
 
             return;
         }
+
+        // Sort actions by timestamp (latest first)
+        const sortedActions = [...actions].sort((a, b) => {
+            const dateA = new Date(a.timestamp);
+            const dateB = new Date(b.timestamp);
+            return dateB - dateA; // Descending order (newest first)
+        });
 
         // Get action card template
         const actionCardTemplate = document.getElementById('action-card-template').content;
@@ -821,7 +828,7 @@ class LibraryApp {
         let deletedCount = 0;
 
         // Add each action to the list
-        actions.forEach((action, index) => {
+        sortedActions.forEach((action, index) => {
             // Update statistics by action type
             if (action.type === 'POST') {
                 addedCount++;

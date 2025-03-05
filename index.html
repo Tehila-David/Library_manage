@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
+
 <body>
   <div id="app">
     <div id="router-view"></div>
@@ -117,7 +119,8 @@
             <span id="user-greeting">שלום, <span id="username-display">ספרן</span></span>
             <nav class="top-nav">
               <a href="#/books" id="books-link" class="nav-link active"><i class="fas fa-book"></i> ספרים</a>
-              <a href="#/my-actions" id="my-actions-link" class="nav-link"><i class="fas fa-history"></i> הפעולות שלי</a>
+              <a href="#/my-actions" id="my-actions-link" class="nav-link"><i class="fas fa-history"></i> הפעולות
+                שלי</a>
               <button class="btn-logout" title="התנתק"><i class="fas fa-sign-out-alt"></i></button>
             </nav>
           </div>
@@ -242,10 +245,10 @@
         <!-- Action cards container -->
         <div class="actions-list" id="actions-list">
           <!-- Action cards will be inserted here dynamically -->
-       
+
         </div>
       </div>
-      
+
       <!-- Footer placeholder for this page -->
       <div id="footer-placeholder"></div>
     </div>
@@ -340,7 +343,7 @@
       <div id="footer-placeholder"></div>
     </div>
   </template>
-  
+
   <!-- Edit Book Template -->
   <template id="edit-book-template">
     <div>
@@ -391,11 +394,11 @@
           <div class="form-group">
             <label for="edit-book-status">סטטוס</label>
             <select id="edit-book-status" required>
-                <option value="">סטטוס</option>
-                <option value="זמין">זמין</option>
-                <option value="מושאל">מושאל</option>
-                <option value="מאוחר">באיחור</option>
-                <option value="לא זמין">לא זמין</option>
+              <option value="">סטטוס</option>
+              <option value="זמין">זמין</option>
+              <option value="מושאל">מושאל</option>
+              <option value="מאוחר">באיחור</option>
+              <option value="לא זמין">לא זמין</option>
             </select>
           </div>
           <button type="submit" class="btn btn-success">
@@ -417,24 +420,23 @@
     <footer class="site-footer">
       <div class="footer-container">
         <div class="footer-section">
-          <h3>ספריית האוניברסיטה</h3>
-          <p>שעות פעילות:</p>
-          <p>ראשון-חמישי: 8:00-20:00</p>
-          <p>שישי: 8:00-14:00</p>
+          <h3>מערכת ניהול ספרייה</h3>
+          <p>שעות פעילות מוקד תמיכה:</p>
+          <p>ראשון-חמישי: 9:00-18:00</p>
+          <p>שישי: 9:00-13:00</p>
         </div>
         <div class="footer-section">
           <h3>קישורים מהירים</h3>
           <ul>
             <li><a href="#/books">ניהול ספרים</a></li>
             <li><a href="#/my-actions">הפעולות שלי</a></li>
-            <li><a href="#" target="_blank">שאלות נפוצות</a></li>
           </ul>
         </div>
         <div class="footer-section">
           <h3>צור קשר</h3>
-          <p><i class="fas fa-phone"></i> 03-1234567</p>
-          <p><i class="fas fa-envelope"></i> library@example.edu</p>
-          <p><i class="fas fa-map-marker-alt"></i> רחוב האוניברסיטה 1, תל אביב</p>
+          <p><i class="fas fa-phone"></i> 03-9876543</p>
+          <p><i class="fas fa-envelope"></i> support@librarysystem.com</p>
+          <p><i class="fas fa-headset"></i> מוקד תמיכה טכנית</p>
         </div>
       </div>
       <div class="footer-bottom">
@@ -452,4 +454,5 @@
   <script src="./Client/JS/fajax.js" defer></script>
   <script src="./Client/JS/app.js" defer></script>
 </body>
+
 </html>
