@@ -392,7 +392,7 @@ class LibraryApp {
         request.onerror = (error) => {
             this.hideLoading();
             setTimeout(() => {  //the timeout is in order to the code will can be hide the loading before alert
-                this.showAlert(error.error || "אופס. קרתה תקלה כלשהי בזמן הוספת הספר, נסה שוב",'danger');
+                this.showAlert(error.error || "קרתה תקלה כלשהי בזמן הוספת הספר, נסה שוב",'danger');
             }, 30);
         };
         request.onload = (book) => {
@@ -427,7 +427,7 @@ class LibraryApp {
         request.onerror = (error) => {
             this.hideLoading();
             setTimeout(() => {  //the timeout is in order to the code will can be hide the loading before alert
-                this.showAlert(error.error || "אופס. קרתה תקלה כלשהי בזמן עדכון הספר. נסה שוב",'danger');
+                this.showAlert(error.error || "קרתה תקלה כלשהי בזמן עדכון הספר. נסה שוב",'danger');
             }, 30);
         };
         request.onload = (book) => {
@@ -477,7 +477,7 @@ class LibraryApp {
         request.onerror = (error) => {
             this.hideLoading();
             setTimeout(() => {  //the timeout is in order to the code will can be hide the loading before alert
-                this.showAlert(error.error || "אופס. קרתה תקלה כלשהי בזמן מחיקת הספר. נסה שוב",'danger');
+                this.showAlert(error.error || "קרתה תקלה כלשהי בזמן מחיקת הספר. נסה שוב",'danger');
             }, 30);
         };
         request.onload = () => {
