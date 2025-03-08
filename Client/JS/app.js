@@ -261,7 +261,7 @@ class LibraryApp {
             //     this.recordAction('logout', `התנתקות מהמערכת`, null,
             //         `משתמש ${this.currentUser.userName} התנתק מהמערכת`);
             // }
-
+            this.showAlert("התנתקת מהמערכת");
             this.currentUser = null;
             window.location.hash = '/login';
         });
@@ -282,6 +282,7 @@ class LibraryApp {
             var user = users.find((user) => user.userName === username);
             if (user) {
                 if (user.password === password) {
+                    this.showAlert("התחברת בהצלחה!",'success');
                     window.location.hash = '/books'; // Navigate to books page on successful login
                     localStorage.setItem('currentUser', JSON.stringify(user));
                 } else {
@@ -401,7 +402,7 @@ class LibraryApp {
 
             setTimeout(() => {  //the timeout is in order to the code will can be hide the loading before alert
                 this.showAlert(`הספר "${book.title}" נוסף בהצלחה למערכת!`,'success');
-                window.location.hash = '/books?refresh=' + new Date().getTime();
+                window.location.hash = '/books';
             }, 30);
             const actionId = this.getNextActionId(); // Function that returns a running ID
             const newAction = {
@@ -415,6 +416,7 @@ class LibraryApp {
 
             // Add the action to the user's action array
             this.AddAction(newAction);
+
         };
         this.showLoading();
         request.send(bookData);
