@@ -252,11 +252,6 @@ class LibraryApp {
 
         // Logout button
         document.querySelector('.btn-logout')?.addEventListener('click', () => {
-            // Record logout action
-            // if (this.currentUser) {
-            //     this.recordAction('logout', `התנתקות מהמערכת`, null,
-            //         `משתמש ${this.currentUser.userName} התנתק מהמערכת`);
-            // }
             this.showAlert("התנתקת מהמערכת");
             this.currentUser = null;
             window.location.hash = '/login';
@@ -633,7 +628,6 @@ class LibraryApp {
     // ============= ACTION MANAGEMENT FUNCTIONS =============
 
     // Function to add an action to the user's history
-    // פתרון מעודכן לפונקציית AddAction
     AddAction(action) {
         // check that current user is valid
         if (!this.currentUser || typeof this.currentUser !== 'object') {
