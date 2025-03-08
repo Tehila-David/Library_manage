@@ -344,9 +344,7 @@ class LibraryApp {
         request.open("GET", `/books/${bookId}`, "BooksServer"); // With ID for specific book
         request.onerror = (error) => {
             this.hideLoading();
-            setTimeout(() => {  //the timeout is in order to the code will can be hide the loading before alert
-                this.showAlert(`כישלון בטעינת הספר: ${error.error}`,'danger');
-            }, 30);
+            this.showAlert(`כישלון בטעינת הספר: ${error.error}`,'danger');
         };
         request.onload = (book) => {
             this.hideLoading();
@@ -423,9 +421,7 @@ class LibraryApp {
         request.open("PUT", `/books/${bookId}`, "BooksServer"); // With ID for updating
         request.onerror = (error) => {
             this.hideLoading();
-            setTimeout(() => {  //the timeout is in order to the code will can be hide the loading before alert
-                this.showAlert(error.error || "קרתה תקלה כלשהי בזמן עדכון הספר. נסה שוב",'danger');
-            }, 30);
+            this.showAlert(error.error || "קרתה תקלה כלשהי בזמן עדכון הספר. נסה שוב",'danger');
         };
         request.onload = (book) => {
             this.hideLoading();
@@ -475,9 +471,7 @@ class LibraryApp {
         request.open("DELETE", `/books/${bookId}`, "BooksServer"); // With ID for deleting
         request.onerror = (error) => {
             this.hideLoading();
-            setTimeout(() => {  //the timeout is in order to the code will can be hide the loading before alert
-                this.showAlert(error.error || "קרתה תקלה כלשהי בזמן מחיקת הספר. נסה שוב",'danger');
-            }, 30);
+            this.showAlert(error.error || "קרתה תקלה כלשהי בזמן מחיקת הספר. נסה שוב",'danger');
         };
         request.onload = () => {
             this.hideLoading();
@@ -496,7 +490,6 @@ class LibraryApp {
                     timestamp: new Date(),
                     author: bookDetails.author
                 };
-
                 // Add the action to the user's action array
                 this.AddAction(newAction);
             }
@@ -642,20 +635,19 @@ class LibraryApp {
     // Function to add an action to the user's history
     // פתרון מעודכן לפונקציית AddAction
     AddAction(action) {
-        // וודא שה-currentUser הוא אובייקט תקין לפני התחלת פעולה
+        // check that current user is valid
         if (!this.currentUser || typeof this.currentUser !== 'object') {
             console.error("currentUser is not a valid object:", this.currentUser);
-            // אפשר לנסות לטעון מחדש מ-localStorage
+            // try to load again from local storage
             this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
 
-            // אם עדיין לא תקין, לא נוכל להמשיך
+            // if until not valid -error
             if (!this.currentUser || typeof this.currentUser !== 'object') {
                 console.error("Failed to retrieve valid user from localStorage");
                 return null;
             }
         }
 
-        // וודא שיש מערך actionsHistory
         if (!this.currentUser.actionsHistory) {
             this.currentUser.actionsHistory = [];
         }
@@ -663,17 +655,17 @@ class LibraryApp {
         console.log("Adding action:", action.title);
         console.log("Current user:", this.currentUser.userName);
 
-        // הוסף את הפעולה למערך של המשתמש
+        // add the action to the user array
         this.currentUser.actionsHistory.push(action);
 
-        // שמור את המשתמש המעודכן ב-localStorage
+        // save it
         try {
             localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
         } catch (e) {
             console.error("Error saving to localStorage:", e);
         }
 
-        // שמור את המשתמש המעודכן בשרת באמצעות PUT
+        // save by "PUT" in the user
         const request = new FXMLHttpRequest();
         request.open("PUT", `/users/${this.currentUser.id}`, 'AuthServer');
 
@@ -686,7 +678,6 @@ class LibraryApp {
         request.onload = (updatedUser) => {
             this.hideLoading();
             console.log("Action added successfully to user history");
-            // חשוב לשמור את כל האובייקט המעודכן ולא רק חלק ממנו
             if (updatedUser && typeof updatedUser === 'object') {
                 localStorage.setItem('currentUser', JSON.stringify(updatedUser));
             }
