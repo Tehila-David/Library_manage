@@ -136,11 +136,7 @@ class LibraryApp {
                 if (e.target.matches('.delete-btn')) {
                     e.preventDefault();
                     const bookId = e.target.getAttribute('data-book-id');
-
-                    // Add confirmation before deletion
-                    if (confirm('האם אתה בטוח שברצונך למחוק ספר זה?')) {
-                        this.deleteBook(bookId);
-                    }
+                    this.deleteBook(bookId);
                 }
             });
 
@@ -392,18 +388,17 @@ class LibraryApp {
         request.open("POST", "/books", "BooksServer"); // No ID for creating new book
         request.onerror = (error) => {
             this.hideLoading();
-            setTimeout(() => {  //the timeout is in order to the code will can be hide the loading before alert
-                this.showAlert(error.error || "קרתה תקלה כלשהי בזמן הוספת הספר, נסה שוב",'danger');
-            }, 30);
+            this.showAlert(error.error || "קרתה תקלה כלשהי בזמן הוספת הספר, נסה שוב",'danger');
         };
+
         request.onload = (book) => {
             this.hideLoading();
             // Create new action
 
-            setTimeout(() => {  //the timeout is in order to the code will can be hide the loading before alert
-                this.showAlert(`הספר "${book.title}" נוסף בהצלחה למערכת!`,'success');
-                window.location.hash = '/books';
-            }, 30);
+            this.showAlert(`הספר "${book.title}" נוסף בהצלחה למערכת!`,'success');
+            window.location.hash = '/books';
+            this.loadBooks(); // Refresh the book list
+
             const actionId = this.getNextActionId(); // Function that returns a running ID
             const newAction = {
                 id: actionId,
@@ -435,10 +430,10 @@ class LibraryApp {
         request.onload = (book) => {
             this.hideLoading();
 
-            setTimeout(() => {  //the timeout is in order to the code will can be hide the loading before alert
-                this.showAlert(`פרטי הספר "${bookData.title}" עודכנו בהצלחה!`,'success');
-                window.location.hash = '/books';
-            }, 30);
+            this.showAlert(`פרטי הספר "${bookData.title}" עודכנו בהצלחה!`,'success');
+            this.loadBooks(); // Refresh the book list
+            window.location.hash = '/books';
+
 
             // Create new action for book update
             const actionId = this.getNextActionId(); // Function that returns a running ID
@@ -463,6 +458,8 @@ class LibraryApp {
 
     // Function to delete a book
     async deleteBook(bookId) {
+        this.showLoading();
+
         console.log(bookId);
 
         // Get book details before deletion so we can save them in the action
@@ -485,10 +482,8 @@ class LibraryApp {
         request.onload = () => {
             this.hideLoading();
 
-            setTimeout(() => {  //the timeout is in order to the code will can be hide the loading before alert
-                this.showAlert(`הספר  "${bookDetails.title}" נמחק בהצלחה!`,'success');
-                this.loadBooks(); // Refresh the book list
-            }, 30);
+            this.showAlert(`הספר  "${bookDetails.title}" נמחק בהצלחה!`,'success');
+            this.loadBooks(); // Refresh the book list
 
             // Create new action for book deletion
             if (bookDetails) {
