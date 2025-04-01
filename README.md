@@ -67,19 +67,30 @@ The app uses a custom router to handle navigation:
 ```
 
 ## 📸 Screenshots
+### LogIn Page 
+<p align="left">
+<img src="https://github.com/Tehila-David/Library_manage/blob/main/Screenshots/Login_page.jpg" width="80%">
+</p>
 
-![Login Screen](screenshots/login.png)
-*User authentication screen*
+### Register Page 
+<p align="left">
+<img src="https://github.com/Tehila-David/Library_manage/blob/main/Screenshots/register_page.png" width="80%">
+</p>
 
-![Books Management](screenshots/books.png)
-*Main book management interface*
+### Books Page
+<p align="left">
+<img src="https://github.com/Tehila-David/Library_manage/blob/main/Screenshots/books_page.png" width="80%">
+</p>
 
-![Add Book Form](screenshots/add-book.png)
-*Form for adding new books*
+### Add Book Page
+<p align="left">
+<img src="https://github.com/Tehila-David/Library_manage/blob/main/Screenshots/add_book_page.png" width="80%">
+</p>
 
-![Action History](screenshots/history.png)
-*User action history and statistics*
-
+### History Page
+<p align="left">
+<img src="https://github.com/Tehila-David/Library_manage/blob/main/Screenshots/history_page.png" width="80%">
+</p>
 
 
 ## 🔍 Application Flow
